@@ -68,75 +68,6 @@ function exportCSV() {
   a.click();
 }
 
-async function callAI() {
-  const text = document.getElementById('ai-text').value.trim();
-  if (!text) return;
-  const btn = document.getElementById('ai-btn');
-  btn.disabled = true; btn.textContent = 'Analizando...';
-
-  const systemPrompt = `Eres un extractor de datos. Analiza el texto y extrae suscripciones. Devuelve EXCLUSIVAMENTE un array JSON válido sin markdown, sin preámbulo, sin backticks.
-Cada elemento: name (string), price (number, 0 si no se menciona), expiry (YYYY-MM-DD, si dice "en X días" calcula desde ${new Date().toISOString().split('T')[0]}, si no menciona usa 30 días desde hoy), category (exactamente: "tiendas" para planes Shopify, "apps" para apps dentro de Shopify, "herramientas" para todo lo demás).
-Si no hay suscripciones: []`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: text }]
-      })
-    });
-    const data = await res.json();
-    const raw = data.content.filter(i => i.type === 'text').map(i => i.text).join('');
-    const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
-    if (!parsed.length) { alert('No se detectaron suscripciones'); return; }
-    renderAIPreview(parsed);
-  } catch(e) {
-    alert('Error IA: ' + e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = '✨ Extraer suscripciones';
-  }
-}
-
-function renderAIPreview(items) {
-  const container = document.getElementById('ai-preview');
-  container.innerHTML = `
-    <div style="background:#1e1b4b;border:1px solid #4f46e5;border-radius:12px;padding:16px;margin-top:12px">
-      <div style="font-size:13px;color:#a5b4fc;margin-bottom:10px">Vista previa (${items.length} suscripciones detectadas):</div>
-      ${items.map((s,i) => `
-        <div style="background:#312e81;border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-weight:600">${s.name}</div>
-            <div style="font-size:12px;color:#818cf8">${CATEGORIES[s.category]?.label} · ${formatDate(s.expiry)}</div>
-          </div>
-          <div style="color:#c084fc;font-weight:700">${s.price}€</div>
-        </div>
-      `).join('')}
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button onclick="confirmAI(${JSON.stringify(items).split('"').join('&quot;')})" 
-          style="flex:1;background:#16a34a;color:white;border:none;border-radius:8px;padding:10px;cursor:pointer;font-weight:600">
-          ✓ Añadir todas
-        </button>
-        <button onclick="document.getElementById('ai-preview').innerHTML=''"
-          style="background:#374151;color:white;border:none;border-radius:8px;padding:10px 14px;cursor:pointer">
-          ✕
-        </button>
-      </div>
-    </div>`;
-}
-
-async function confirmAI(items) {
-  for (const s of items) {
-    await db.from('subscriptions').insert([s]);
-  }
-  document.getElementById('ai-preview').innerHTML = '';
-  document.getElementById('ai-text').value = '';
-  await loadSubs();
-}
-
 function handleFormSubmit() {
   const name = document.getElementById('f-name').value.trim();
   const price = parseFloat(document.getElementById('f-price').value);
@@ -244,21 +175,19 @@ function render() {
       </div>
     </div>` : ''}
 
-    <!-- Form + AI grid -->
-    <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:24px">
-
-      <!-- Manual form -->
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:16px;padding:20px">
-        <div style="font-weight:600;margin-bottom:14px">+ ${editingId ? 'Editar' : 'Añadir manual'}</div>
-        <select id="f-category" style="width:100%;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;margin-bottom:8px;font-size:13px">
+    <!-- Form -->
+    <div style="background:#0f172a;border:1px solid #1e293b;border-radius:16px;padding:20px;margin-bottom:24px">
+      <div style="font-weight:600;margin-bottom:14px">+ ${editingId ? 'Editar suscripción' : 'Añadir suscripción'}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;align-items:end">
+        <select id="f-category" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;font-size:13px">
           ${Object.entries(CATEGORIES).map(([k,v]) => `<option value="${k}">${v.label}</option>`).join('')}
         </select>
         <input id="f-name" type="text" placeholder="Nombre" onkeydown="if(event.key==='Enter')handleFormSubmit()"
-          style="width:100%;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;margin-bottom:8px;font-size:13px;box-sizing:border-box"/>
-        <input id="f-price" type="number" step="0.01" placeholder="Precio mensual (€)" onkeydown="if(event.key==='Enter')handleFormSubmit()"
-          style="width:100%;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;margin-bottom:8px;font-size:13px;box-sizing:border-box"/>
+          style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;font-size:13px"/>
+        <input id="f-price" type="number" step="0.01" placeholder="Precio (€)" onkeydown="if(event.key==='Enter')handleFormSubmit()"
+          style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;font-size:13px"/>
         <input id="f-expiry" type="date" onkeydown="if(event.key==='Enter')handleFormSubmit()"
-          style="width:100%;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px;box-sizing:border-box"/>
+          style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;font-size:13px"/>
         <div style="display:flex;gap:8px">
           <button id="form-btn" onclick="handleFormSubmit()"
             style="flex:1;background:linear-gradient(135deg,#7c3aed,#a21caf);color:white;border:none;border-radius:8px;padding:11px;cursor:pointer;font-weight:600;font-size:13px">
@@ -268,19 +197,6 @@ function render() {
             ✕
           </button>
         </div>
-      </div>
-
-      <!-- AI assistant -->
-      <div style="background:linear-gradient(135deg,#1a0533,#0c0a1a);border:1px solid #6d28d944;border-radius:16px;padding:20px">
-        <div style="font-weight:600;margin-bottom:4px">✨ Asistente IA</div>
-        <div style="font-size:12px;color:#94a3b8;margin-bottom:12px">Escribe sobre tus suscripciones en lenguaje natural</div>
-        <textarea id="ai-text" rows="5" placeholder="Ej: Tengo Shopify Basic a 29€ que vence el 15 de mayo, Klaviyo a 45€ el día 20, Canva Pro 12€ en 5 días..."
-          style="width:100%;background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:10px;border-radius:8px;font-size:13px;resize:none;box-sizing:border-box"></textarea>
-        <button id="ai-btn" onclick="callAI()"
-          style="margin-top:10px;background:linear-gradient(135deg,#7e22ce,#be185d);color:white;border:none;border-radius:8px;padding:11px 20px;cursor:pointer;font-weight:600;font-size:13px">
-          ✨ Extraer suscripciones
-        </button>
-        <div id="ai-preview"></div>
       </div>
     </div>
 
@@ -292,7 +208,7 @@ function render() {
         return `
         <div style="background:#0f172a;border:1px solid #1e293b;border-radius:16px;overflow:hidden">
           <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer"
-            onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+            onclick="const b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none'">
             <div style="display:flex;align-items:center;gap:12px">
               <span style="font-size:1.4rem">${cat.icon}</span>
               <div>
@@ -312,7 +228,7 @@ function render() {
                   ${items.map(s => {
                     const c = statusColor(s.days);
                     return `
-                    <div style="background:${c.bg};border:1px solid ${c.border};border-radius:12px;padding:16px;transition:transform .15s" 
+                    <div style="background:${c.bg};border:1px solid ${c.border};border-radius:12px;padding:16px;transition:transform .15s"
                       onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
                         <div style="flex:1;min-width:0">
@@ -323,8 +239,8 @@ function render() {
                           <div style="font-size:11px;color:#94a3b8;margin-top:3px">Vence ${formatDate(s.expiry)}</div>
                         </div>
                         <div style="display:flex;gap:4px;margin-left:8px;flex-shrink:0">
-                          <button onclick="startEdit('${s.id}')" style="background:transparent;border:none;cursor:pointer;padding:4px;border-radius:6px;color:#94a3b8" title="Editar">✏️</button>
-                          <button onclick="deleteSub('${s.id}')" style="background:transparent;border:none;cursor:pointer;padding:4px;border-radius:6px;color:#94a3b8" title="Eliminar">🗑️</button>
+                          <button onclick="startEdit('${s.id}')" style="background:transparent;border:none;cursor:pointer;padding:4px;border-radius:6px" title="Editar">✏️</button>
+                          <button onclick="deleteSub('${s.id}')" style="background:transparent;border:none;cursor:pointer;padding:4px;border-radius:6px" title="Eliminar">🗑️</button>
                         </div>
                       </div>
                       <div style="display:flex;justify-content:space-between;align-items:flex-end">
@@ -347,5 +263,4 @@ function render() {
   </div>`;
 }
 
-// Init
 loadSubs();
