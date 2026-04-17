@@ -39,7 +39,79 @@ async function loadSubs() {
 async function addSub(sub) {
   const { error } = await db.from('subscriptions').insert([sub]);
   if (error) { alert('Error al guardar: ' + error.message); return; }
-  await loadSubs();
+  await const PIN = '2038';
+
+function renderLogin() {
+  document.getElementById('app').innerHTML = `
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+    <div style="background:#0f172a;border:1px solid #1e293b;border-radius:20px;padding:40px 36px;width:100%;max-width:360px;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:8px">🔐</div>
+      <h2 style="margin:0 0 4px;font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+        Bienvenido, Samu
+      </h2>
+      <p style="color:#64748b;font-size:13px;margin:0 0 28px">Introduce tu PIN para continuar</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px" id="pin-dots">
+        ${[0,1,2,3].map(i => `<div id="dot-${i}" style="width:14px;height:14px;border-radius:50%;border:2px solid #334155;background:transparent;transition:all .2s"></div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+        ${[1,2,3,4,5,6,7,8,9].map(n => `
+          <button onclick="pinPress('${n}')" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;font-size:1.3rem;font-weight:600;padding:18px;border-radius:12px;cursor:pointer;transition:background .15s"
+            onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'">${n}</button>
+        `).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <button onclick="pinClear()" style="background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:1rem;padding:18px;border-radius:12px;cursor:pointer;transition:background .15s"
+          onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'">⌫</button>
+        <button onclick="pinPress('0')" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;font-size:1.3rem;font-weight:600;padding:18px;border-radius:12px;cursor:pointer;transition:background .15s"
+          onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'">0</button>
+        <button onclick="pinSubmit()" style="background:linear-gradient(135deg,#7c3aed,#a21caf);border:none;color:white;font-size:1rem;padding:18px;border-radius:12px;cursor:pointer">✓</button>
+      </div>
+      <div id="pin-error" style="color:#f87171;font-size:13px;margin-top:16px;min-height:20px"></div>
+    </div>
+  </div>`;
+}
+
+let pinValue = '';
+
+function pinPress(n) {
+  if (pinValue.length >= 4) return;
+  pinValue += n;
+  updateDots();
+  if (pinValue.length === 4) setTimeout(pinSubmit, 150);
+}
+
+function pinClear() {
+  pinValue = pinValue.slice(0, -1);
+  updateDots();
+}
+
+function updateDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('dot-' + i);
+    if (!dot) return;
+    dot.style.background = i < pinValue.length ? '#a78bfa' : 'transparent';
+    dot.style.borderColor = i < pinValue.length ? '#a78bfa' : '#334155';
+  }
+}
+
+function pinSubmit() {
+  if (pinValue === PIN) {
+    sessionStorage.setItem('auth', '1');
+    loadSubs();
+  } else {
+    pinValue = '';
+    updateDots();
+    const err = document.getElementById('pin-error');
+    if (err) { err.textContent = 'PIN incorrecto'; setTimeout(() => { if(err) err.textContent = ''; }, 2000); }
+  }
+}
+
+// Init
+if (sessionStorage.getItem('auth') === '1') {
+  loadSubs();
+} else {
+  renderLogin();
+}
 }
 
 async function updateSub(id, sub) {
