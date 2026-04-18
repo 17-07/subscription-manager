@@ -256,7 +256,7 @@ function render() {
 
 
     <!-- NAVEGACIÓN A HERRAMIENTAS -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:24px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:24px">
       <a href="https://claude.ai/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896" target="_blank" rel="noopener" 
          style="background:linear-gradient(135deg,#7c3aed,#a21caf);border-radius:16px;padding:20px 24px;text-decoration:none;color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 20px rgba(124,58,237,.25);transition:transform .15s,box-shadow .15s" 
          onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(124,58,237,.4)'" 
