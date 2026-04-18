@@ -254,6 +254,26 @@ function render() {
       </div>
     </div>
 
+
+    <!-- NAVEGACIÓN A HERRAMIENTAS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:24px">
+      <a href="https://claude.ai/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896" target="_blank" rel="noopener" 
+         style="background:linear-gradient(135deg,#7c3aed,#a21caf);border-radius:16px;padding:20px 24px;text-decoration:none;color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 20px rgba(124,58,237,.25);transition:transform .15s,box-shadow .15s" 
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(124,58,237,.4)'" 
+         onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(124,58,237,.25)'">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem">✍️</div>
+          <div>
+            <div style="font-weight:700;font-size:1.05rem;line-height:1.2">Generador de Reviews</div>
+            <div style="font-size:12px;opacity:.85;margin-top:2px">Abrir herramienta</div>
+          </div>
+        </div>
+        <div style="font-size:1.3rem;opacity:.9">→</div>
+      </a>
+    </div>
+
+
+
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
       <div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:16px">
         <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.05em">Gasto mensual</div>
