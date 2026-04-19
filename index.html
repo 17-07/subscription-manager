@@ -108,12 +108,14 @@
     .card-policies::before { background: radial-gradient(circle at top left, rgba(34,211,238,.08), transparent 60%); }
     .card-ia::before       { background: radial-gradient(circle at top left, rgba(251,146,60,.08), transparent 60%); }
     .card-liquid::before   { background: radial-gradient(circle at top left, rgba(52,211,153,.08), transparent 60%); }
+    .card-email::before    { background: radial-gradient(circle at top left, rgba(99,102,241,.08), transparent 60%); }
 
     .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
     .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
     .card-policies:hover { box-shadow: 0 12px 40px rgba(34,211,238,.2); }
     .card-ia:hover       { box-shadow: 0 12px 40px rgba(251,146,60,.2); }
     .card-liquid:hover   { box-shadow: 0 12px 40px rgba(52,211,153,.2); }
+    .card-email:hover    { box-shadow: 0 12px 40px rgba(99,102,241,.2); }
 
     .icon {
       width: 48px;
@@ -131,6 +133,7 @@
     .card-policies .icon { background: rgba(34,211,238,.15); }
     .card-ia       .icon { background: rgba(251,146,60,.15); }
     .card-liquid   .icon { background: rgba(52,211,153,.15); }
+    .card-email    .icon { background: rgba(99,102,241,.15); }
 
     .card-body { flex: 1; }
     .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
@@ -148,6 +151,7 @@
     .card-policies:hover .card-arrow { color: #22d3ee; }
     .card-ia:hover       .card-arrow { color: #fb923c; }
     .card-liquid:hover   .card-arrow { color: #34d399; }
+    .card-email:hover    .card-arrow { color: #818cf8; }
 
     /* MODALES */
     .modal {
@@ -214,6 +218,58 @@
       height: calc(95vh - 65px);
       border: none;
     }
+
+    .email-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .email-subject {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .email-subject-value {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #e2e8f0;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .email-content {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      margin-bottom: 16px;
+    }
+
+    .copy-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .copy-btn:hover { opacity: .85; }
   </style>
 </head>
 <body>
@@ -253,6 +309,15 @@
           <div class="card-body">
             <div class="card-title">Generador de Políticas</div>
             <div class="card-desc">Crea políticas de tienda personalizadas: devoluciones, privacidad, envíos y más.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+
+        <div class="card card-email" onclick="openModal('email-modal')">
+          <div class="icon">✉️</div>
+          <div class="card-body">
+            <div class="card-title">Test Order Email</div>
+            <div class="card-desc">Cancela cualquier test order con esta plantilla de email.</div>
           </div>
           <div class="card-arrow">→</div>
         </div>
@@ -301,6 +366,32 @@
     </div>
   </div>
 
+  <!-- POPUP TEST ORDER EMAIL -->
+  <div id="email-modal" class="modal">
+    <div class="modal-box" style="max-width:600px">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">✉️</span> Test Order Email</div>
+        <button class="modal-close" onclick="closeModal('email-modal')">✕</button>
+      </div>
+      <div class="email-body">
+        <div class="email-subject">Subject</div>
+        <div class="email-subject-value">Refund Request - Order #1006 — Immediate Action Required</div>
+        <div class="email-content" id="email-text">Hello,
+
+I'm writing regarding Order #XXXX. I purchased a digital product that I have not downloaded, accessed, or used in any way. No delivery has taken place.
+
+I am requesting an immediate cancellation and full refund.
+
+I want to be straightforward: if this refund is not processed promptly, I will have no choice but to initiate a chargeback through my bank. I would prefer to resolve this directly with you, but I will not hesitate to escalate if necessary.
+
+Please confirm the cancellation and refund at your earliest convenience.
+
+Thank you.</div>
+        <button class="copy-btn" onclick="copyEmail()">Copiar mensaje</button>
+      </div>
+    </div>
+  </div>
+
   <!-- POPUP POLÍTICAS -->
   <div id="policies-modal" class="modal">
     <div class="modal-box">
@@ -315,6 +406,15 @@
   </div>
 
   <script>
+    function copyEmail() {
+      var text = document.getElementById('email-text').innerText;
+      navigator.clipboard.writeText(text).then(function() {
+        var btn = document.querySelector('.copy-btn');
+        btn.textContent = '✓ Copiado';
+        setTimeout(function() { btn.textContent = 'Copiar mensaje'; }, 2000);
+      });
+    }
+
     function openModal(id) {
       document.getElementById(id).classList.add('open');
       document.body.style.overflow = 'hidden';
