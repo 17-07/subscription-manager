@@ -3,16 +3,250 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gestor de Suscripciones</title>
+  <title>Samudrop — Herramientas</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #020617; color: #e2e8f0; }
-    input, select, textarea, button { font-family: inherit; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #020617;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .header h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      color: #475569;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 32px 28px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.15s;
+      border-radius: 20px;
+    }
+
+    .card-subs::before  { background: radial-gradient(circle at top left, rgba(124,58,237,.08), transparent 60%); }
+    .card-reviews::before { background: radial-gradient(circle at top left, rgba(244,114,182,.08), transparent 60%); }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: #334155;
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-subs:hover  { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
+    .card-reviews:hover { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
+
+    .icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .card-subs  .icon { background: rgba(124,58,237,.15); }
+    .card-reviews .icon { background: rgba(244,114,182,.15); }
+
+    .card-body { flex: 1; }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .card-arrow {
+      font-size: 1.2rem;
+      color: #334155;
+      transition: color 0.15s, transform 0.15s;
+      align-self: flex-end;
+    }
+
+    .card:hover .card-arrow {
+      color: #a78bfa;
+      transform: translateX(3px);
+    }
+
+    .card-reviews:hover .card-arrow { color: #f472b6; }
+
+    /* POPUP */
+    #review-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(2,6,23,.85);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    #review-modal.open { display: flex; }
+
+    .modal-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 1200px;
+      max-height: 95vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,.6);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #1e293b;
+      flex-shrink: 0;
+    }
+
+    .modal-header span { font-weight: 700; font-size: 1rem; }
+
+    .modal-close {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: calc(95vh - 65px);
+      border: none;
+    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="app"><div style="display:flex;justify-content:center;align-items:center;height:100vh;font-size:18px;color:#64748b">Cargando...</div></div>
-  <script src="app.js"></script>
+
+  <div class="header">
+    <h1>Samudrop</h1>
+    <p>Selecciona una herramienta para continuar</p>
+  </div>
+
+  <div class="grid">
+
+    <a href="subscriptions.html" class="card card-subs">
+      <div class="icon">📋</div>
+      <div class="card-body">
+        <div class="card-title">Gestor de Suscripciones</div>
+        <div class="card-desc">Controla tus gastos recurrentes de ecommerce y recibe alertas de vencimiento.</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <div class="card card-reviews" onclick="openReviews()">
+      <div class="icon">✍️</div>
+      <div class="card-body">
+        <div class="card-title">Generador de Reviews</div>
+        <div class="card-desc">Genera reseñas de producto optimizadas para tu tienda de dropshipping.</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+
+  </div>
+
+  <!-- POPUP REVIEWS -->
+  <div id="review-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.3rem">✍️</span>
+          <span>Generador de Reviews</span>
+        </div>
+        <button class="modal-close" onclick="closeReviews()">✕</button>
+      </div>
+      <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed"
+              title="Review Generator — Dropshipping Pipeline"
+              allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    function openReviews() {
+      document.getElementById('review-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeReviews() {
+      document.getElementById('review-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeReviews();
+    });
+  </script>
+
 </body>
 </html>
