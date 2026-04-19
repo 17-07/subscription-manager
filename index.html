@@ -38,7 +38,6 @@
       margin-top: 8px;
     }
 
-    /* SECCIONES */
     .sections {
       width: 100%;
       max-width: 960px;
@@ -107,12 +106,12 @@
     .card-subs::before     { background: radial-gradient(circle at top left, rgba(124,58,237,.08), transparent 60%); }
     .card-reviews::before  { background: radial-gradient(circle at top left, rgba(244,114,182,.08), transparent 60%); }
     .card-policies::before { background: radial-gradient(circle at top left, rgba(34,211,238,.08), transparent 60%); }
-    .card-keywords::before { background: radial-gradient(circle at top left, rgba(251,146,60,.08), transparent 60%); }
+    .card-ia::before       { background: radial-gradient(circle at top left, rgba(251,146,60,.08), transparent 60%); }
 
     .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
     .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
     .card-policies:hover { box-shadow: 0 12px 40px rgba(34,211,238,.2); }
-    .card-keywords:hover { box-shadow: 0 12px 40px rgba(251,146,60,.2); }
+    .card-ia:hover       { box-shadow: 0 12px 40px rgba(251,146,60,.2); }
 
     .icon {
       width: 48px;
@@ -128,21 +127,11 @@
     .card-subs     .icon { background: rgba(124,58,237,.15); }
     .card-reviews  .icon { background: rgba(244,114,182,.15); }
     .card-policies .icon { background: rgba(34,211,238,.15); }
-    .card-keywords .icon { background: rgba(251,146,60,.15); }
+    .card-ia       .icon { background: rgba(251,146,60,.15); }
 
     .card-body { flex: 1; }
-
-    .card-title {
-      font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 5px;
-    }
-
-    .card-desc {
-      font-size: 13px;
-      color: #64748b;
-      line-height: 1.5;
-    }
+    .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
+    .card-desc  { font-size: 13px; color: #64748b; line-height: 1.5; }
 
     .card-arrow {
       font-size: 1.1rem;
@@ -154,7 +143,7 @@
     .card:hover          .card-arrow { color: #a78bfa; transform: translateX(3px); }
     .card-reviews:hover  .card-arrow { color: #f472b6; }
     .card-policies:hover .card-arrow { color: #22d3ee; }
-    .card-keywords:hover .card-arrow { color: #fb923c; }
+    .card-ia:hover       .card-arrow { color: #fb923c; }
 
     /* MODALES */
     .modal {
@@ -182,10 +171,6 @@
       flex-direction: column;
       overflow: hidden;
       box-shadow: 0 25px 60px rgba(0,0,0,.6);
-    }
-
-    .modal-box.modal-sm {
-      max-width: 560px;
     }
 
     .modal-header {
@@ -217,7 +202,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
     }
 
     iframe {
@@ -225,37 +209,6 @@
       width: 100%;
       height: calc(95vh - 65px);
       border: none;
-    }
-
-    /* KEYWORDS */
-    .keywords-body {
-      padding: 24px;
-      overflow-y: auto;
-    }
-
-    .keywords-note {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
-    .keywords-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .kw {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #fbbf24;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-family: monospace;
-      letter-spacing: .02em;
     }
   </style>
 </head>
@@ -308,14 +261,14 @@
       <div class="section-label"><span>IA</span></div>
       <div class="grid">
 
-        <div class="card card-keywords" onclick="openModal('keywords-modal')">
-          <div class="icon">🚫</div>
+        <a href="ia.html" class="card card-ia">
+          <div class="icon">🤖</div>
           <div class="card-body">
-            <div class="card-title">Restringir palabras clave</div>
-            <div class="card-desc">Lista de palabras prohibidas para vídeos de IA en TikTok.</div>
+            <div class="card-title">Herramientas de IA</div>
+            <div class="card-desc">Recursos para gestionar y optimizar el uso de IA en tus tiendas.</div>
           </div>
           <div class="card-arrow">→</div>
-        </div>
+        </a>
 
       </div>
     </div>
@@ -345,45 +298,6 @@
       <iframe src="https://claude.site/public/artifacts/8db4c369-adf7-4f26-a5e3-03360703e591/embed"
               title="Generador de Políticas de Tienda"
               allow="clipboard-write" allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <!-- POPUP PALABRAS CLAVE -->
-  <div id="keywords-modal" class="modal">
-    <div class="modal-box modal-sm">
-      <div class="modal-header">
-        <div class="modal-header-title"><span style="font-size:1.3rem">🚫</span> Palabras clave restringidas — TikTok IA</div>
-        <button class="modal-close" onclick="closeModal('keywords-modal')">✕</button>
-      </div>
-      <div class="keywords-body">
-        <p class="keywords-note">Estas palabras están restringidas en los vídeos generados con IA para TikTok. Evítalas en subtítulos, voiceovers y descripciones.</p>
-        <div class="keywords-grid">
-          <span class="kw">A.I</span>
-          <span class="kw">A.L</span>
-          <span class="kw">Fall</span>
-          <span class="kw">[Sticker]</span>
-          <span class="kw">[Photo]</span>
-          <span class="kw">Real</span>
-          <span class="kw">Believe</span>
-          <span class="kw">Smart</span>
-          <span class="kw">(a)</span>
-          <span class="kw">(i)</span>
-          <span class="kw">AL</span>
-          <span class="kw">Ai</span>
-          <span class="kw">Ia</span>
-          <span class="kw">Dropshipping</span>
-          <span class="kw">Dropshiping</span>
-          <span class="kw">Dropshiped</span>
-          <span class="kw">Dropshipped</span>
-          <span class="kw">Fake</span>
-          <span class="kw">China</span>
-          <span class="kw">AliExpress</span>
-          <span class="kw">Aliexpres</span>
-          <span class="kw">Temu</span>
-          <span class="kw">Shein</span>
-          <span class="kw">Alibaba</span>
-        </div>
-      </div>
     </div>
   </div>
 

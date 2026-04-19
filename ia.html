@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Samudrop — Herramientas de IA</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #020617;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #475569;
+      font-size: 13px;
+      text-decoration: none;
+      margin-bottom: 40px;
+      transition: color 0.15s;
+      align-self: flex-start;
+    }
+    .back:hover { color: #94a3b8; }
+
+    .wrapper {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header {
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fb923c, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      color: #475569;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 28px 24px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.15s;
+      border-radius: 20px;
+    }
+
+    .card:hover { transform: translateY(-3px); border-color: #334155; }
+    .card:hover::before { opacity: 1; }
+
+    .card-keywords::before { background: radial-gradient(circle at top left, rgba(251,146,60,.08), transparent 60%); }
+    .card-keywords:hover { box-shadow: 0 12px 40px rgba(251,146,60,.2); }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .card-keywords .icon { background: rgba(251,146,60,.15); }
+
+    .card-body { flex: 1; }
+    .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
+    .card-desc  { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+    .card-arrow {
+      font-size: 1.1rem;
+      color: #334155;
+      transition: color 0.15s, transform 0.15s;
+      align-self: flex-end;
+    }
+    .card-keywords:hover .card-arrow { color: #fb923c; transform: translateX(3px); }
+
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(2,6,23,.85);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal.open { display: flex; }
+
+    .modal-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,.6);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #1e293b;
+      flex-shrink: 0;
+    }
+
+    .modal-header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .modal-close {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .keywords-body { padding: 24px; overflow-y: auto; }
+    .keywords-note { font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.5; }
+    .keywords-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .kw {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #fbbf24;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: monospace;
+      letter-spacing: .02em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+
+    <a href="index.html" class="back">← Volver al menú</a>
+
+    <div class="header">
+      <h1>Herramientas de IA</h1>
+      <p>Recursos para gestionar y optimizar el uso de IA en tus tiendas</p>
+    </div>
+
+    <div class="grid">
+
+      <div class="card card-keywords" onclick="openModal('keywords-modal')">
+        <div class="icon">🚫</div>
+        <div class="card-body">
+          <div class="card-title">Restringir palabras clave</div>
+          <div class="card-desc">Lista de palabras prohibidas para vídeos de IA en TikTok.</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- POPUP PALABRAS CLAVE -->
+  <div id="keywords-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">🚫</span> Palabras clave restringidas — TikTok IA</div>
+        <button class="modal-close" onclick="closeModal('keywords-modal')">✕</button>
+      </div>
+      <div class="keywords-body">
+        <p class="keywords-note">Evita estas palabras en subtítulos, voiceovers y descripciones de vídeos generados con IA en TikTok.</p>
+        <div class="keywords-grid">
+          <span class="kw">A.I</span>
+          <span class="kw">A.L</span>
+          <span class="kw">Fall</span>
+          <span class="kw">[Sticker]</span>
+          <span class="kw">[Photo]</span>
+          <span class="kw">Real</span>
+          <span class="kw">Believe</span>
+          <span class="kw">Smart</span>
+          <span class="kw">(a)</span>
+          <span class="kw">(i)</span>
+          <span class="kw">AL</span>
+          <span class="kw">Ai</span>
+          <span class="kw">Ia</span>
+          <span class="kw">Dropshipping</span>
+          <span class="kw">Dropshiping</span>
+          <span class="kw">Dropshiped</span>
+          <span class="kw">Dropshipped</span>
+          <span class="kw">Fake</span>
+          <span class="kw">China</span>
+          <span class="kw">AliExpress</span>
+          <span class="kw">Aliexpres</span>
+          <span class="kw">Temu</span>
+          <span class="kw">Shein</span>
+          <span class="kw">Alibaba</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.open').forEach(function(m) {
+          m.classList.remove('open');
+        });
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
+
+</body>
+</html>
