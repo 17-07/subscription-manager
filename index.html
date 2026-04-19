@@ -43,7 +43,7 @@
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
       width: 100%;
-      max-width: 680px;
+      max-width: 960px;
     }
 
     .card {
@@ -72,8 +72,9 @@
       border-radius: 20px;
     }
 
-    .card-subs::before  { background: radial-gradient(circle at top left, rgba(124,58,237,.08), transparent 60%); }
-    .card-reviews::before { background: radial-gradient(circle at top left, rgba(244,114,182,.08), transparent 60%); }
+    .card-subs::before     { background: radial-gradient(circle at top left, rgba(124,58,237,.08), transparent 60%); }
+    .card-reviews::before  { background: radial-gradient(circle at top left, rgba(244,114,182,.08), transparent 60%); }
+    .card-policies::before { background: radial-gradient(circle at top left, rgba(34,211,238,.08), transparent 60%); }
 
     .card:hover {
       transform: translateY(-3px);
@@ -81,8 +82,9 @@
     }
     .card:hover::before { opacity: 1; }
 
-    .card-subs:hover  { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
-    .card-reviews:hover { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
+    .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
+    .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
+    .card-policies:hover { box-shadow: 0 12px 40px rgba(34,211,238,.2); }
 
     .icon {
       width: 52px;
@@ -95,8 +97,9 @@
       flex-shrink: 0;
     }
 
-    .card-subs  .icon { background: rgba(124,58,237,.15); }
-    .card-reviews .icon { background: rgba(244,114,182,.15); }
+    .card-subs     .icon { background: rgba(124,58,237,.15); }
+    .card-reviews  .icon { background: rgba(244,114,182,.15); }
+    .card-policies .icon { background: rgba(34,211,238,.15); }
 
     .card-body { flex: 1; }
 
@@ -124,10 +127,11 @@
       transform: translateX(3px);
     }
 
-    .card-reviews:hover .card-arrow { color: #f472b6; }
+    .card-reviews:hover  .card-arrow { color: #f472b6; }
+    .card-policies:hover .card-arrow { color: #22d3ee; }
 
     /* POPUP */
-    #review-modal {
+    .modal {
       display: none;
       position: fixed;
       inset: 0;
@@ -139,7 +143,7 @@
       padding: 16px;
     }
 
-    #review-modal.open { display: flex; }
+    .modal.open { display: flex; }
 
     .modal-box {
       background: #0f172a;
@@ -205,7 +209,7 @@
       <div class="card-arrow">→</div>
     </a>
 
-    <div class="card card-reviews" onclick="openReviews()">
+    <div class="card card-reviews" onclick="openModal('reviews-modal')">
       <div class="icon">✍️</div>
       <div class="card-body">
         <div class="card-title">Generador de Reviews</div>
@@ -214,17 +218,26 @@
       <div class="card-arrow">→</div>
     </div>
 
+    <div class="card card-policies" onclick="openModal('policies-modal')">
+      <div class="icon">📄</div>
+      <div class="card-body">
+        <div class="card-title">Generador de Políticas</div>
+        <div class="card-desc">Crea políticas de tienda personalizadas: devoluciones, privacidad, envíos y más.</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </div>
+
   </div>
 
   <!-- POPUP REVIEWS -->
-  <div id="review-modal">
+  <div id="reviews-modal" class="modal">
     <div class="modal-box">
       <div class="modal-header">
         <div style="display:flex;align-items:center;gap:10px">
           <span style="font-size:1.3rem">✍️</span>
           <span>Generador de Reviews</span>
         </div>
-        <button class="modal-close" onclick="closeReviews()">✕</button>
+        <button class="modal-close" onclick="closeModal('reviews-modal')">✕</button>
       </div>
       <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed"
               title="Review Generator — Dropshipping Pipeline"
@@ -232,19 +245,40 @@
     </div>
   </div>
 
+  <!-- POPUP POLÍTICAS -->
+  <div id="policies-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.3rem">📄</span>
+          <span>Generador de Políticas de Tienda</span>
+        </div>
+        <button class="modal-close" onclick="closeModal('policies-modal')">✕</button>
+      </div>
+      <iframe src="https://claude.site/public/artifacts/8db4c369-adf7-4f26-a5e3-03360703e591/embed"
+              title="Generador de Políticas de Tienda"
+              allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+
   <script>
-    function openReviews() {
-      document.getElementById('review-modal').classList.add('open');
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
       document.body.style.overflow = 'hidden';
     }
 
-    function closeReviews() {
-      document.getElementById('review-modal').classList.remove('open');
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
       document.body.style.overflow = '';
     }
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeReviews();
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.open').forEach(function(m) {
+          m.classList.remove('open');
+        });
+        document.body.style.overflow = '';
+      }
     });
   </script>
 
