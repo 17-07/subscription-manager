@@ -274,7 +274,7 @@ function render() {
 
     <!-- POPUP GENERADOR DE REVIEWS -->
     <div id="review-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(2,6,23,.85);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px">
-      <div style="background:#0f172a;border:1px solid #334155;border-radius:20px;width:100%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.6)">
+      <div style="background:#0f172a;border:1px solid #334155;border-radius:20px;width:100%;max-width:1200px;max-height:95vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.6)">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #1e293b;flex-shrink:0">
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:1.3rem">✍️</span>
@@ -283,7 +283,7 @@ function render() {
           <button onclick="closeReviewGenerator()" style="background:#1e293b;border:1px solid #334155;color:#94a3b8;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
         </div>
         <div style="flex:1;overflow:hidden;padding:0">
-          <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed" title="Review Generator — Dropshipping Pipeline" width="100%" height="600" frameborder="0" allow="clipboard-write" allowfullscreen style="display:block;width:100%;height:600px;border:none"></iframe>
+          <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed" title="Review Generator — Dropshipping Pipeline" width="100%" height="100%" frameborder="0" allow="clipboard-write" allowfullscreen style="display:block;width:100%;height:calc(95vh - 65px);border:none"></iframe>
         </div>
       </div>
     </div>

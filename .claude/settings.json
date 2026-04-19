@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/samu/Documents/samudrop/subscription-manager && f=$(jq -r '.tool_input.file_path // empty') && [ -n \"$f\" ] && git add \"$f\" && git diff --cached --quiet || git commit -m \"Update $(basename $f)\" && git push 2>/dev/null || true",
+            "statusMessage": "Guardando en GitHub..."
+          }
+        ]
+      }
+    ]
+  }
+}
