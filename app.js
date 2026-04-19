@@ -257,9 +257,9 @@ function render() {
 
     <!-- NAVEGACIÓN A HERRAMIENTAS -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:24px">
-      <a href="https://claude.ai/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896" target="_blank" rel="noopener" 
-         style="background:linear-gradient(135deg,#7c3aed,#a21caf);border-radius:16px;padding:20px 24px;text-decoration:none;color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 20px rgba(124,58,237,.25);transition:transform .15s,box-shadow .15s" 
-         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(124,58,237,.4)'" 
+      <button onclick="openReviewGenerator()"
+         style="background:linear-gradient(135deg,#7c3aed,#a21caf);border-radius:16px;padding:20px 24px;text-decoration:none;color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 20px rgba(124,58,237,.25);transition:transform .15s,box-shadow .15s;border:none;cursor:pointer;width:100%;text-align:left"
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(124,58,237,.4)'"
          onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(124,58,237,.25)'">
         <div style="display:flex;align-items:center;gap:14px">
           <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem">✍️</div>
@@ -269,7 +269,23 @@ function render() {
           </div>
         </div>
         <div style="font-size:1.3rem;opacity:.9">→</div>
-      </a>
+      </button>
+    </div>
+
+    <!-- POPUP GENERADOR DE REVIEWS -->
+    <div id="review-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(2,6,23,.85);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px">
+      <div style="background:#0f172a;border:1px solid #334155;border-radius:20px;width:100%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.6)">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #1e293b;flex-shrink:0">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:1.3rem">✍️</span>
+            <span style="font-weight:700;font-size:1rem">Generador de Reviews</span>
+          </div>
+          <button onclick="closeReviewGenerator()" style="background:#1e293b;border:1px solid #334155;color:#94a3b8;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:0">
+          <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed" title="Review Generator — Dropshipping Pipeline" width="100%" height="600" frameborder="0" allow="clipboard-write" allowfullscreen style="display:block;width:100%;height:600px;border:none"></iframe>
+        </div>
+      </div>
     </div>
 
 
@@ -397,6 +413,26 @@ function render() {
     ${subs.length === 0 ? '<div style="text-align:center;color:#475569;font-size:14px;margin-top:40px">Aún no tienes suscripciones. Añade alguna arriba.</div>' : ''}
   </div>`;
 }
+
+// ── REVIEW GENERATOR POPUP ───────────────────────────
+
+function openReviewGenerator() {
+  var modal = document.getElementById('review-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeReviewGenerator() {
+  var modal = document.getElementById('review-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeReviewGenerator();
+});
 
 // ── INIT ─────────────────────────────────────────────
 
