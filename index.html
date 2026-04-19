@@ -15,7 +15,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 48px 24px;
     }
 
     .header {
@@ -38,26 +38,55 @@
       margin-top: 8px;
     }
 
+    /* SECCIONES */
+    .sections {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .section-label span {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: #475569;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #1e293b;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
-      width: 100%;
-      max-width: 960px;
     }
 
     .card {
       background: #0f172a;
       border: 1px solid #1e293b;
       border-radius: 20px;
-      padding: 32px 28px;
+      padding: 28px 24px;
       cursor: pointer;
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 16px;
+      gap: 14px;
       transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
       position: relative;
       overflow: hidden;
@@ -72,41 +101,41 @@
       border-radius: 20px;
     }
 
+    .card:hover { transform: translateY(-3px); border-color: #334155; }
+    .card:hover::before { opacity: 1; }
+
     .card-subs::before     { background: radial-gradient(circle at top left, rgba(124,58,237,.08), transparent 60%); }
     .card-reviews::before  { background: radial-gradient(circle at top left, rgba(244,114,182,.08), transparent 60%); }
     .card-policies::before { background: radial-gradient(circle at top left, rgba(34,211,238,.08), transparent 60%); }
-
-    .card:hover {
-      transform: translateY(-3px);
-      border-color: #334155;
-    }
-    .card:hover::before { opacity: 1; }
+    .card-keywords::before { background: radial-gradient(circle at top left, rgba(251,146,60,.08), transparent 60%); }
 
     .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
     .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
     .card-policies:hover { box-shadow: 0 12px 40px rgba(34,211,238,.2); }
+    .card-keywords:hover { box-shadow: 0 12px 40px rgba(251,146,60,.2); }
 
     .icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       flex-shrink: 0;
     }
 
     .card-subs     .icon { background: rgba(124,58,237,.15); }
     .card-reviews  .icon { background: rgba(244,114,182,.15); }
     .card-policies .icon { background: rgba(34,211,238,.15); }
+    .card-keywords .icon { background: rgba(251,146,60,.15); }
 
     .card-body { flex: 1; }
 
     .card-title {
       font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 6px;
+      font-size: 1rem;
+      margin-bottom: 5px;
     }
 
     .card-desc {
@@ -116,21 +145,18 @@
     }
 
     .card-arrow {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #334155;
       transition: color 0.15s, transform 0.15s;
       align-self: flex-end;
     }
 
-    .card:hover .card-arrow {
-      color: #a78bfa;
-      transform: translateX(3px);
-    }
-
+    .card:hover          .card-arrow { color: #a78bfa; transform: translateX(3px); }
     .card-reviews:hover  .card-arrow { color: #f472b6; }
     .card-policies:hover .card-arrow { color: #22d3ee; }
+    .card-keywords:hover .card-arrow { color: #fb923c; }
 
-    /* POPUP */
+    /* MODALES */
     .modal {
       display: none;
       position: fixed;
@@ -158,6 +184,10 @@
       box-shadow: 0 25px 60px rgba(0,0,0,.6);
     }
 
+    .modal-box.modal-sm {
+      max-width: 560px;
+    }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
@@ -167,7 +197,13 @@
       flex-shrink: 0;
     }
 
-    .modal-header span { font-weight: 700; font-size: 1rem; }
+    .modal-header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
 
     .modal-close {
       background: #1e293b;
@@ -181,6 +217,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     iframe {
@@ -188,6 +225,37 @@
       width: 100%;
       height: calc(95vh - 65px);
       border: none;
+    }
+
+    /* KEYWORDS */
+    .keywords-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .keywords-note {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .keywords-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .kw {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #fbbf24;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: monospace;
+      letter-spacing: .02em;
     }
   </style>
 </head>
@@ -198,33 +266,58 @@
     <p>Selecciona una herramienta para continuar</p>
   </div>
 
-  <div class="grid">
+  <div class="sections">
 
-    <a href="subscriptions.html" class="card card-subs">
-      <div class="icon">📋</div>
-      <div class="card-body">
-        <div class="card-title">Gestor de Suscripciones</div>
-        <div class="card-desc">Controla tus gastos recurrentes de ecommerce y recibe alertas de vencimiento.</div>
-      </div>
-      <div class="card-arrow">→</div>
-    </a>
+    <!-- HERRAMIENTAS -->
+    <div>
+      <div class="section-label"><span>Herramientas</span></div>
+      <div class="grid">
 
-    <div class="card card-reviews" onclick="openModal('reviews-modal')">
-      <div class="icon">✍️</div>
-      <div class="card-body">
-        <div class="card-title">Generador de Reviews</div>
-        <div class="card-desc">Genera reseñas de producto optimizadas para tu tienda de dropshipping.</div>
+        <a href="subscriptions.html" class="card card-subs">
+          <div class="icon">📋</div>
+          <div class="card-body">
+            <div class="card-title">Gestor de Suscripciones</div>
+            <div class="card-desc">Controla tus gastos recurrentes de ecommerce y recibe alertas de vencimiento.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </a>
+
+        <div class="card card-reviews" onclick="openModal('reviews-modal')">
+          <div class="icon">✍️</div>
+          <div class="card-body">
+            <div class="card-title">Generador de Reviews</div>
+            <div class="card-desc">Genera reseñas de producto optimizadas para tu tienda de dropshipping.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+
+        <div class="card card-policies" onclick="openModal('policies-modal')">
+          <div class="icon">📄</div>
+          <div class="card-body">
+            <div class="card-title">Generador de Políticas</div>
+            <div class="card-desc">Crea políticas de tienda personalizadas: devoluciones, privacidad, envíos y más.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+
       </div>
-      <div class="card-arrow">→</div>
     </div>
 
-    <div class="card card-policies" onclick="openModal('policies-modal')">
-      <div class="icon">📄</div>
-      <div class="card-body">
-        <div class="card-title">Generador de Políticas</div>
-        <div class="card-desc">Crea políticas de tienda personalizadas: devoluciones, privacidad, envíos y más.</div>
+    <!-- IA -->
+    <div>
+      <div class="section-label"><span>IA</span></div>
+      <div class="grid">
+
+        <div class="card card-keywords" onclick="openModal('keywords-modal')">
+          <div class="icon">🚫</div>
+          <div class="card-body">
+            <div class="card-title">Restringir palabras clave</div>
+            <div class="card-desc">Lista de palabras prohibidas para vídeos de IA en TikTok.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+
       </div>
-      <div class="card-arrow">→</div>
     </div>
 
   </div>
@@ -233,10 +326,7 @@
   <div id="reviews-modal" class="modal">
     <div class="modal-box">
       <div class="modal-header">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:1.3rem">✍️</span>
-          <span>Generador de Reviews</span>
-        </div>
+        <div class="modal-header-title"><span style="font-size:1.3rem">✍️</span> Generador de Reviews</div>
         <button class="modal-close" onclick="closeModal('reviews-modal')">✕</button>
       </div>
       <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed"
@@ -249,15 +339,51 @@
   <div id="policies-modal" class="modal">
     <div class="modal-box">
       <div class="modal-header">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:1.3rem">📄</span>
-          <span>Generador de Políticas de Tienda</span>
-        </div>
+        <div class="modal-header-title"><span style="font-size:1.3rem">📄</span> Generador de Políticas de Tienda</div>
         <button class="modal-close" onclick="closeModal('policies-modal')">✕</button>
       </div>
       <iframe src="https://claude.site/public/artifacts/8db4c369-adf7-4f26-a5e3-03360703e591/embed"
               title="Generador de Políticas de Tienda"
               allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- POPUP PALABRAS CLAVE -->
+  <div id="keywords-modal" class="modal">
+    <div class="modal-box modal-sm">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">🚫</span> Palabras clave restringidas — TikTok IA</div>
+        <button class="modal-close" onclick="closeModal('keywords-modal')">✕</button>
+      </div>
+      <div class="keywords-body">
+        <p class="keywords-note">Estas palabras están restringidas en los vídeos generados con IA para TikTok. Evítalas en subtítulos, voiceovers y descripciones.</p>
+        <div class="keywords-grid">
+          <span class="kw">A.I</span>
+          <span class="kw">A.L</span>
+          <span class="kw">Fall</span>
+          <span class="kw">[Sticker]</span>
+          <span class="kw">[Photo]</span>
+          <span class="kw">Real</span>
+          <span class="kw">Believe</span>
+          <span class="kw">Smart</span>
+          <span class="kw">(a)</span>
+          <span class="kw">(i)</span>
+          <span class="kw">AL</span>
+          <span class="kw">Ai</span>
+          <span class="kw">Ia</span>
+          <span class="kw">Dropshipping</span>
+          <span class="kw">Dropshiping</span>
+          <span class="kw">Dropshiped</span>
+          <span class="kw">Dropshipped</span>
+          <span class="kw">Fake</span>
+          <span class="kw">China</span>
+          <span class="kw">AliExpress</span>
+          <span class="kw">Aliexpres</span>
+          <span class="kw">Temu</span>
+          <span class="kw">Shein</span>
+          <span class="kw">Alibaba</span>
+        </div>
+      </div>
     </div>
   </div>
 
