@@ -431,7 +431,14 @@ function closeReviewGenerator() {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeReviewGenerator();
+  if (e.key === 'Escape') { closeReviewGenerator(); return; }
+
+  // PIN keyboard support (solo cuando la pantalla de login está activa)
+  if (!sessionStorage.getItem('auth')) {
+    if (/^[0-9]$/.test(e.key)) { pinPress(e.key); return; }
+    if (e.key === 'Backspace')  { pinClear(); return; }
+    if (e.key === 'Enter')      { pinSubmit(); return; }
+  }
 });
 
 // ── INIT ─────────────────────────────────────────────
