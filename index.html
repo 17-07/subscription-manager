@@ -107,11 +107,13 @@
     .card-reviews::before  { background: radial-gradient(circle at top left, rgba(244,114,182,.08), transparent 60%); }
     .card-policies::before { background: radial-gradient(circle at top left, rgba(34,211,238,.08), transparent 60%); }
     .card-ia::before       { background: radial-gradient(circle at top left, rgba(251,146,60,.08), transparent 60%); }
+    .card-liquid::before   { background: radial-gradient(circle at top left, rgba(52,211,153,.08), transparent 60%); }
 
     .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
     .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
     .card-policies:hover { box-shadow: 0 12px 40px rgba(34,211,238,.2); }
     .card-ia:hover       { box-shadow: 0 12px 40px rgba(251,146,60,.2); }
+    .card-liquid:hover   { box-shadow: 0 12px 40px rgba(52,211,153,.2); }
 
     .icon {
       width: 48px;
@@ -128,6 +130,7 @@
     .card-reviews  .icon { background: rgba(244,114,182,.15); }
     .card-policies .icon { background: rgba(34,211,238,.15); }
     .card-ia       .icon { background: rgba(251,146,60,.15); }
+    .card-liquid   .icon { background: rgba(52,211,153,.15); }
 
     .card-body { flex: 1; }
     .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
@@ -144,6 +147,7 @@
     .card-reviews:hover  .card-arrow { color: #f472b6; }
     .card-policies:hover .card-arrow { color: #22d3ee; }
     .card-ia:hover       .card-arrow { color: #fb923c; }
+    .card-liquid:hover   .card-arrow { color: #34d399; }
 
     /* MODALES */
     .modal {
@@ -253,6 +257,15 @@
           <div class="card-arrow">→</div>
         </div>
 
+        <div class="card card-liquid" onclick="openModal('liquid-modal')">
+          <div class="icon">💧</div>
+          <div class="card-body">
+            <div class="card-title">Biblioteca de Liquids</div>
+            <div class="card-desc">Snippets y recursos de Liquid para personalizar tu tienda Shopify.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+
       </div>
     </div>
 
@@ -284,6 +297,19 @@
       </div>
       <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed"
               title="Review Generator — Dropshipping Pipeline"
+              allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- POPUP BIBLIOTECA LIQUIDS -->
+  <div id="liquid-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">💧</span> Biblioteca de Liquids</div>
+        <button class="modal-close" onclick="closeModal('liquid-modal')">✕</button>
+      </div>
+      <iframe src="https://free-kick-f40.notion.site/24f2dc98c054802d98f8fdb5fd1f4a29?v=24f2dc98c0548064b15d000c210e42ee"
+              title="Biblioteca de Liquids"
               allow="clipboard-write" allowfullscreen></iframe>
     </div>
   </div>
