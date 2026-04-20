@@ -111,7 +111,8 @@
     .card-email::before    { background: radial-gradient(circle at top left, rgba(99,102,241,.08), transparent 60%); }
     .card-domain::before   { background: radial-gradient(circle at top left, rgba(20,184,166,.08), transparent 60%); }
     .card-traffic::before  { background: radial-gradient(circle at top left, rgba(239,68,68,.08), transparent 60%); }
-    .card-tiktok::before   { background: radial-gradient(circle at top left, rgba(254,44,85,.08), transparent 60%); }
+    .card-tiktok::before      { background: radial-gradient(circle at top left, rgba(254,44,85,.08), transparent 60%); }
+    .card-downloader::before  { background: radial-gradient(circle at top left, rgba(14,165,233,.08), transparent 60%); }
 
     .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
     .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
@@ -121,7 +122,8 @@
     .card-email:hover    { box-shadow: 0 12px 40px rgba(99,102,241,.2); }
     .card-domain:hover   { box-shadow: 0 12px 40px rgba(20,184,166,.2); }
     .card-traffic:hover  { box-shadow: 0 12px 40px rgba(239,68,68,.2); }
-    .card-tiktok:hover   { box-shadow: 0 12px 40px rgba(254,44,85,.2); }
+    .card-tiktok:hover      { box-shadow: 0 12px 40px rgba(254,44,85,.2); }
+    .card-downloader:hover  { box-shadow: 0 12px 40px rgba(14,165,233,.2); }
 
     .icon {
       width: 48px;
@@ -142,7 +144,8 @@
     .card-email    .icon { background: rgba(99,102,241,.15); }
     .card-domain   .icon { background: rgba(20,184,166,.15); }
     .card-traffic  .icon { background: rgba(239,68,68,.15); }
-    .card-tiktok   .icon { background: rgba(254,44,85,.15); }
+    .card-tiktok      .icon { background: rgba(254,44,85,.15); }
+    .card-downloader  .icon { background: rgba(14,165,233,.15); }
 
     .card-body { flex: 1; }
     .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
@@ -163,7 +166,8 @@
     .card-email:hover    .card-arrow { color: #818cf8; }
     .card-domain:hover   .card-arrow { color: #2dd4bf; }
     .card-traffic:hover  .card-arrow { color: #f87171; }
-    .card-tiktok:hover   .card-arrow { color: #fe2c55; }
+    .card-tiktok:hover      .card-arrow { color: #fe2c55; }
+    .card-downloader:hover  .card-arrow { color: #0ea5e9; }
 
     /* MODALES */
     .modal {
@@ -461,6 +465,15 @@
           <div class="card-arrow">→</div>
         </div>
 
+        <div class="card card-downloader" onclick="openModal('downloader-modal')">
+          <div class="icon">⬇️</div>
+          <div class="card-body">
+            <div class="card-title">Descargador de Vídeos</div>
+            <div class="card-desc">Descarga vídeos de TikTok e Instagram a máxima calidad y sin marca de agua.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+
       </div>
     </div>
 
@@ -709,6 +722,17 @@ Thank you.</div>
     </div>
   </div>
 
+  <!-- POPUP DESCARGADOR DE VÍDEOS -->
+  <div id="downloader-modal" class="modal">
+    <div class="modal-box" style="max-width:600px">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">⬇️</span> Descargador de Vídeos</div>
+        <button class="modal-close" onclick="closeModal('downloader-modal')">✕</button>
+      </div>
+      <iframe id="downloader-frame" title="Descargador de Vídeos" allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+
   <!-- POPUP GENERADOR COMENTARIO TIKTOK -->
   <div id="tiktok-comment-modal" class="modal">
     <div class="modal-box">
@@ -734,6 +758,193 @@ Thank you.</div>
   </div>
 
   <script>
+    var DOWNLOADER_HTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Descargador de V\u00EDdeos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0c; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 20px; }
+  .container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 28px; }
+  .header { text-align: center; }
+  .header-icon { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, rgba(14,165,233,.2), rgba(6,182,212,.1)); border: 1px solid rgba(14,165,233,.25); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.6rem; }
+  .header h1 { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #0ea5e9, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .header p { font-size: 13px; color: #475569; }
+  .card { background: #0d0d10; border: 1px solid #1e293b; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .input-wrap { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0 14px; height: 52px; transition: border-color 0.2s; }
+  .input-wrap:focus-within { border-color: rgba(14,165,233,0.5); background: rgba(14,165,233,0.04); }
+  .platform-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+  .platform-badge.hidden { display: none; }
+  .platform-badge.tiktok { color: #fe2c55; }
+  .platform-badge.instagram { color: #e1306c; }
+  .badge-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
+  .badge-sep.hidden { display: none; }
+  .url-input { flex: 1; background: transparent; border: none; outline: none; color: #e2e8f0; font-size: 14px; font-family: inherit; min-width: 0; }
+  .url-input::placeholder { color: rgba(255,255,255,0.2); }
+  .clear-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.2); font-size: 16px; line-height: 1; padding: 4px; border-radius: 6px; flex-shrink: 0; transition: color 0.15s; display: none; }
+  .clear-btn.visible { display: block; }
+  .clear-btn:hover { color: rgba(255,255,255,0.6); }
+  .btn-download { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #0ea5e9, #22d3ee); color: white; transition: filter 0.15s, opacity 0.15s; }
+  .btn-download:hover:not(:disabled) { filter: brightness(1.1); }
+  .btn-download:disabled { opacity: 0.45; cursor: not-allowed; filter: none; }
+  .state { display: none; border-radius: 12px; padding: 16px; }
+  .state.visible { display: flex; }
+  .state-loading { align-items: center; justify-content: center; gap: 12px; background: rgba(14,165,233,0.06); border: 1px solid rgba(14,165,233,0.15); color: #7dd3fc; font-size: 13px; font-weight: 500; }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(14,165,233,0.2); border-top-color: #0ea5e9; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .state-success { flex-direction: column; gap: 14px; background: rgba(52,211,153,0.06); border: 1px solid rgba(52,211,153,0.2); }
+  .success-top { display: flex; align-items: center; gap: 10px; }
+  .success-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(52,211,153,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #34d399; font-size: 15px; }
+  .success-text { flex: 1; }
+  .success-text strong { display: block; font-size: 13px; font-weight: 700; color: #34d399; }
+  .success-text span { font-size: 12px; color: #475569; }
+  .btn-save { width: 100%; padding: 11px; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 7px; background: linear-gradient(135deg, #059669, #34d399); color: white; transition: filter 0.15s; text-decoration: none; }
+  .btn-save:hover { filter: brightness(1.1); }
+  .state-error { align-items: flex-start; gap: 10px; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); }
+  .error-icon { width: 28px; height: 28px; border-radius: 50%; background: rgba(239,68,68,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #f87171; font-size: 13px; margin-top: 1px; }
+  .error-text { flex: 1; }
+  .error-text strong { display: block; font-size: 13px; font-weight: 700; color: #f87171; margin-bottom: 3px; }
+  .error-text span { font-size: 12px; color: #64748b; line-height: 1.5; }
+  .credits { text-align: center; font-size: 11px; color: #1e293b; letter-spacing: 0.04em; }
+  .credits span { background: linear-gradient(135deg, #0ea5e9, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-icon">\u2B07\uFE0F</div>
+    <h1>Descargador de V\u00EDdeos</h1>
+    <p>Descarga v\u00EDdeos de TikTok e Instagram a m\u00E1xima calidad y sin marca de agua</p>
+  </div>
+  <div class="card">
+    <div class="input-wrap">
+      <div class="platform-badge hidden" id="platform-badge"></div>
+      <div class="badge-sep hidden" id="badge-sep"></div>
+      <input type="url" id="url-input" class="url-input" placeholder="Pega aqu\u00ED la URL del v\u00EDdeo..." oninput="onUrlInput()" onpaste="setTimeout(onUrlInput,0)" autocomplete="off" spellcheck="false" />
+      <button class="clear-btn" id="clear-btn" onclick="clearInput()" title="Borrar">\u2715</button>
+    </div>
+    <button class="btn-download" id="download-btn" onclick="startDownload()" disabled>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><\/svg>
+      Descargar v\u00EDdeo
+    </button>
+    <div class="state state-loading" id="state-loading">
+      <div class="spinner"></div>
+      <span id="loading-text">Procesando v\u00EDdeo...</span>
+    </div>
+    <div class="state state-success" id="state-success">
+      <div class="success-top">
+        <div class="success-icon">\u2713</div>
+        <div class="success-text">
+          <strong>V\u00EDdeo listo para descargar</strong>
+          <span id="success-platform">Procesado correctamente</span>
+        </div>
+      </div>
+      <a id="save-link" class="btn-save" href="#" download>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><\/svg>
+        Guardar v\u00EDdeo
+      </a>
+    </div>
+    <div class="state state-error" id="state-error">
+      <div class="error-icon">\u2715</div>
+      <div class="error-text">
+        <strong>No se pudo descargar</strong>
+        <span id="error-msg">Ha ocurrido un error. Comprueba la URL e int\u00E9ntalo de nuevo.</span>
+      </div>
+    </div>
+  </div>
+  <div class="credits">creado por <span>Samu</span></div>
+</div>
+<script>
+  var API_URL = 'https://YOUR_API_URL_HERE';
+  var currentBlobUrl = null;
+  var PLATFORMS = {
+    tiktok: { label: 'TikTok', icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/><\/svg>', className: 'tiktok', filename: 'tiktok-video.mp4' },
+    instagram: { label: 'Instagram', icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/><\/svg>', className: 'instagram', filename: 'instagram-video.mp4' }
+  };
+  function detectPlatform(url) {
+    if (url.includes('tiktok.com') || url.includes('vm.tiktok.com')) return 'tiktok';
+    if (url.includes('instagram.com') || url.includes('instagr.am')) return 'instagram';
+    return null;
+  }
+  function onUrlInput() {
+    var val = document.getElementById('url-input').value.trim();
+    var platform = detectPlatform(val);
+    var badge = document.getElementById('platform-badge');
+    var sep = document.getElementById('badge-sep');
+    document.getElementById('clear-btn').className = val ? 'clear-btn visible' : 'clear-btn';
+    document.getElementById('download-btn').disabled = !platform;
+    if (platform) {
+      var p = PLATFORMS[platform];
+      badge.innerHTML = p.icon + ' ' + p.label;
+      badge.className = 'platform-badge ' + p.className;
+      sep.className = 'badge-sep';
+    } else {
+      badge.className = 'platform-badge hidden';
+      sep.className = 'badge-sep hidden';
+    }
+    hideStates();
+    if (currentBlobUrl) { URL.revokeObjectURL(currentBlobUrl); currentBlobUrl = null; }
+  }
+  function clearInput() {
+    document.getElementById('url-input').value = '';
+    onUrlInput();
+    document.getElementById('url-input').focus();
+  }
+  function hideStates() {
+    document.getElementById('state-loading').className = 'state state-loading';
+    document.getElementById('state-success').className = 'state state-success';
+    document.getElementById('state-error').className = 'state state-error';
+  }
+  async function startDownload() {
+    var url = document.getElementById('url-input').value.trim();
+    var platform = detectPlatform(url);
+    if (!platform) return;
+    var btn = document.getElementById('download-btn');
+    btn.disabled = true;
+    hideStates();
+    var label = PLATFORMS[platform].label;
+    document.getElementById('loading-text').textContent = 'Procesando ' + label + '...';
+    document.getElementById('state-loading').className = 'state state-loading visible';
+    try {
+      var response = await fetch(API_URL + '/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      });
+      if (!response.ok) {
+        var errData = await response.json().catch(function() { return {}; });
+        throw new Error(errData.error || 'Error ' + response.status + ' del servidor');
+      }
+      var contentType = response.headers.get('content-type') || '';
+      if (contentType.startsWith('video/') || contentType === 'application/octet-stream') {
+        var blob = await response.blob();
+        currentBlobUrl = URL.createObjectURL(blob);
+        document.getElementById('success-platform').textContent = 'Descargado desde ' + PLATFORMS[platform].label;
+        var link = document.getElementById('save-link');
+        link.href = currentBlobUrl;
+        link.download = PLATFORMS[platform].filename;
+        document.getElementById('state-loading').className = 'state state-loading';
+        document.getElementById('state-success').className = 'state state-success visible';
+      } else {
+        var data = await response.json();
+        if (data.error) throw new Error(data.error);
+        throw new Error('Respuesta inesperada del servidor');
+      }
+    } catch (err) {
+      document.getElementById('state-loading').className = 'state state-loading';
+      document.getElementById('error-msg').textContent = err.message || 'Ha ocurrido un error. Comprueba la URL e int\u00E9ntalo de nuevo.';
+      document.getElementById('state-error').className = 'state state-error visible';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+<\/script>
+</body>
+</html>`;
+
     var TIKTOK_COMMENT_HTML = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -914,13 +1125,17 @@ Thank you.</div>
     }
 
     var tiktokFrameLoaded = false;
+    var downloaderFrameLoaded = false;
     function openModal(id) {
       document.getElementById(id).classList.add('open');
       document.body.style.overflow = 'hidden';
       if (id === 'tiktok-comment-modal' && !tiktokFrameLoaded) {
         tiktokFrameLoaded = true;
-        var frame = document.getElementById('tiktok-comment-frame');
-        frame.srcdoc = TIKTOK_COMMENT_HTML;
+        document.getElementById('tiktok-comment-frame').srcdoc = TIKTOK_COMMENT_HTML;
+      }
+      if (id === 'downloader-modal' && !downloaderFrameLoaded) {
+        downloaderFrameLoaded = true;
+        document.getElementById('downloader-frame').srcdoc = DOWNLOADER_HTML;
       }
     }
 
