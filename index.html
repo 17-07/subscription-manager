@@ -110,6 +110,7 @@
     .card-liquid::before   { background: radial-gradient(circle at top left, rgba(52,211,153,.08), transparent 60%); }
     .card-email::before    { background: radial-gradient(circle at top left, rgba(99,102,241,.08), transparent 60%); }
     .card-domain::before   { background: radial-gradient(circle at top left, rgba(20,184,166,.08), transparent 60%); }
+    .card-traffic::before  { background: radial-gradient(circle at top left, rgba(239,68,68,.08), transparent 60%); }
 
     .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
     .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
@@ -118,6 +119,7 @@
     .card-liquid:hover   { box-shadow: 0 12px 40px rgba(52,211,153,.2); }
     .card-email:hover    { box-shadow: 0 12px 40px rgba(99,102,241,.2); }
     .card-domain:hover   { box-shadow: 0 12px 40px rgba(20,184,166,.2); }
+    .card-traffic:hover  { box-shadow: 0 12px 40px rgba(239,68,68,.2); }
 
     .icon {
       width: 48px;
@@ -137,6 +139,7 @@
     .card-liquid   .icon { background: rgba(52,211,153,.15); }
     .card-email    .icon { background: rgba(99,102,241,.15); }
     .card-domain   .icon { background: rgba(20,184,166,.15); }
+    .card-traffic  .icon { background: rgba(239,68,68,.15); }
 
     .card-body { flex: 1; }
     .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
@@ -156,6 +159,7 @@
     .card-liquid:hover   .card-arrow { color: #34d399; }
     .card-email:hover    .card-arrow { color: #818cf8; }
     .card-domain:hover   .card-arrow { color: #2dd4bf; }
+    .card-traffic:hover  .card-arrow { color: #f87171; }
 
     /* MODALES */
     .modal {
@@ -435,6 +439,15 @@
           <div class="card-arrow">→</div>
         </a>
 
+        <div class="card card-traffic" onclick="openModal('traffic-modal')">
+          <div class="icon">🎯</div>
+          <div class="card-body">
+            <div class="card-title">Redirección de Tráfico Orgánico</div>
+            <div class="card-desc">Tips para dirigir el tráfico orgánico al país correcto y evitar India, Rusia y otros.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+
       </div>
     </div>
 
@@ -555,6 +568,130 @@ Please confirm the cancellation and refund at your earliest convenience.
 
 Thank you.</div>
         <button class="copy-btn" onclick="copyEmail()">Copiar mensaje</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP REDIRECCIÓN DE TRÁFICO ORGÁNICO -->
+  <div id="traffic-modal" class="modal">
+    <div class="modal-box" style="max-width:660px">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">🎯</span> Redirección de Tráfico Orgánico</div>
+        <button class="modal-close" onclick="closeModal('traffic-modal')">✕</button>
+      </div>
+      <div class="steps-body">
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">1</div>
+          <div class="step-content">
+            <div class="step-title">IP dedicada</div>
+            <div class="step-desc">Si no tienes IP dedicada, cómprala. Es la base para que la VPN funcione correctamente y la cuenta apunte al país que quieres.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">2</div>
+          <div class="step-content">
+            <div class="step-title">Calentar la cuenta en el país objetivo</div>
+            <div class="step-desc">Volver a "calentar" la cuenta con contenido en inglés (o del país target): dar like, comentar y seguir cuentas <strong style="color:#e2e8f0">del país al que quieres dirigir el tráfico</strong>, igual que se hace para calentar una cuenta de producto.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">3</div>
+          <div class="step-content">
+            <div class="step-title">Verificar los "Sonidos" de la cuenta</div>
+            <div class="step-desc">Ve a <strong style="color:#e2e8f0">Sonidos</strong> dentro de la app y comprueba que aparece el <strong style="color:#e2e8f0">TOP 50 sonidos del país</strong> donde tienes la VPN. Si no aparece ese ranking, la cuenta está comprometida y no va a funcionar bien.</div>
+            <div class="step-warning">⚠️ Si el TOP 50 no muestra el país correcto, la cuenta está "jodida" — necesita más calentamiento o es irrecuperable.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">4</div>
+          <div class="step-content">
+            <div class="step-title">Usa música del país objetivo</div>
+            <div class="step-desc">Evita sonidos en otros idiomas, edits de música de anime, audios de memes o canciones graciosas. Usa <strong style="color:#e2e8f0">música del país al que quieres llegar</strong>: si es España, canciones en español; si es EEUU, música en inglés.</div>
+            <div class="step-desc" style="margin-top:8px">Para verificar un audio: pulsa sobre él y mira qué vídeos aparecen primero. Si son de fuera del target, <strong style="color:#f87171">no lo uses</strong>.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">5</div>
+          <div class="step-content">
+            <div class="step-title">Texto a Voz nativo de la red social</div>
+            <div class="step-desc">Usa el <strong style="color:#e2e8f0">Texto a Voz de la propia plataforma</strong> (TikTok, Instagram…) siempre que sea posible. Si el contenido no tiene texto, la IA también funciona.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">6</div>
+          <div class="step-content">
+            <div class="step-title">Para target 100% EEUU: géneros concretos</div>
+            <div class="step-desc">Si apuntas al mercado americano, prioriza estos géneros:</div>
+            <div class="step-path" style="margin-top:8px">
+              <span class="step-path-item">🤠 Country</span>
+              <span class="step-path-item">🎤 Rap</span>
+              <span class="step-path-item">🎵 Pop</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">7</div>
+          <div class="step-content">
+            <div class="step-title">El nicho afecta a la segmentación</div>
+            <div class="step-desc">El nicho del producto influye en el tráfico recibido aunque es difícil de controlar. Por ejemplo, si la ropa es muy viral en India, el algoritmo puede mostrarlo allí por "segmentación de nicho". Tenlo en cuenta al elegir qué productos promocionar.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">8</div>
+          <div class="step-content">
+            <div class="step-title">Quitar restricción de edad en Instagram</div>
+            <div class="step-desc">Cambia la cuenta de Instagram a <strong style="color:#e2e8f0">cuenta de empresa</strong>. Esto elimina automáticamente la restricción de edad que limita el alcance de los vídeos.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">9</div>
+          <div class="step-content">
+            <div class="step-title">Palabras clave del país objetivo (ocultas)</div>
+            <div class="step-desc">Añade palabras clave del país objetivo en el vídeo o descripción y <strong style="color:#e2e8f0">escóndelas</strong> para que el algoritmo las lea sin que el usuario las vea. Métodos:</div>
+            <div class="step-code">
+              1. Texto mismo color que el fondo<br>
+              2. Tamaño de fuente mínimo (1–2px)<br>
+              3. Texto detrás de un elemento/imagen
+            </div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">10</div>
+          <div class="step-content">
+            <div class="step-title">Publicar en horario nocturno de los países no deseados</div>
+            <div class="step-desc">El primer tráfico que recibe un vídeo define gran parte de su distribución. Publica cuando los países que <strong style="color:#f87171">no</strong> quieres estén dormidos.</div>
+            <div class="step-code">Ejemplo: 9 AM España = 3 AM Latam<br>→ El primer tráfico será español</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
