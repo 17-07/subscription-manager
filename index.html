@@ -738,21 +738,15 @@ Thank you.</div>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<title>TikTok Comment Generator</title>
+<title>Generador de Reply TikTok</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0c; min-height: 100vh; display: flex; }
   .app { display: grid; grid-template-columns: 380px 1fr; width: 100%; min-height: 100vh; }
   .left-panel { background: #0d0d10; border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; padding: 24px 20px; gap: 20px; overflow-y: auto; }
+  .tool-title h2 { font-size: 1.25rem; font-weight: 800; background: linear-gradient(135deg, #fe2c55, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
   .section-label { font-size: 10px; font-weight: 600; color: #444; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
-  .platform-pill { display: inline-flex; align-items: center; gap: 10px; padding: 0 14px; height: 36px; background: #0B0C15; border: 1px solid #2A2B35; border-radius: 999px; cursor: pointer; color: #e5e5e5; font-size: 13px; font-weight: 500; font-family: inherit; align-self: flex-start; }
-  .pill-sep { width: 1px; height: 16px; background: #2A2B35; }
-  .tab-bar { display: grid; grid-template-columns: repeat(3, 1fr); background: #0a0a0c; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 4px; gap: 2px; margin-bottom: 14px; }
-  .tab-btn { height: 36px; border-radius: 10px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0 4px; }
-  .tab-btn.active { background: #1e1e22; color: white; border: 1px solid rgba(255,255,255,0.1); }
-  .tab-btn:not(.active) { background: transparent; color: #555; }
-  .tab-btn:not(.active):hover { color: #888; }
   .username-row { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0 8px; height: 40px; color: #a78bfa; margin-bottom: 10px; }
   .username-row input { flex: 1; background: transparent; border: none; outline: none; color: white; font-size: 13px; font-weight: 500; font-family: inherit; min-width: 0; }
   .username-row input::placeholder { color: rgba(255,255,255,0.2); }
@@ -769,12 +763,14 @@ Thank you.</div>
   .export-row { display: flex; gap: 10px; }
   .btn-dl { flex: 1; padding: 14px 0; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(to right, #2563eb, #06b6d4); color: white; transition: filter 0.15s; }
   .btn-dl:hover { filter: brightness(1.12); }
-  .btn-cp { flex: 1; padding: 14px 0; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(to right, #7c3aed, #c026d3); color: white; transition: filter 0.15s; }
+  .btn-cp { flex: 1; padding: 14px 0; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(to right, #fe2c55, #a78bfa); color: white; transition: filter 0.15s; }
   .btn-cp:hover { filter: brightness(1.12); }
+  .credits { margin-top: auto; padding-top: 16px; font-size: 11px; color: #333; text-align: center; letter-spacing: 0.04em; }
+  .credits span { background: linear-gradient(135deg, #fe2c55, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
   .right-panel { display: flex; align-items: center; justify-content: center; background: #0a0a0c; position: relative; padding: 60px 40px; }
   .glow { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(80px); }
-  .glow-1 { width: 500px; height: 500px; background: rgba(99,102,241,0.12); top: -80px; left: -80px; }
-  .glow-2 { width: 400px; height: 400px; background: rgba(168,85,247,0.08); bottom: -60px; right: -60px; }
+  .glow-1 { width: 500px; height: 500px; background: rgba(254,44,85,0.1); top: -80px; left: -80px; }
+  .glow-2 { width: 400px; height: 400px; background: rgba(167,139,250,0.08); bottom: -60px; right: -60px; }
   .bubble-outer { max-width: 380px; width: 100%; }
   .bubble-box { background: white; border-radius: 16px; border-bottom-left-radius: 0; padding: 20px 22px 24px; width: 100%; }
   .bubble-inner { display: flex; gap: 16px; align-items: flex-start; }
@@ -789,22 +785,9 @@ Thank you.</div>
 <body>
 <div class="app">
   <div class="left-panel">
-    <div>
-      <div class="section-label">Platform</div>
-      <button class="platform-pill">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="18" r="4"/><path d="M12 18V2l7 4"/></svg>
-        <div class="pill-sep"></div>
-        <span>Comment Reply</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#6b7280"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-    </div>
+    <div class="tool-title"><h2>Generador de Reply TikTok</h2></div>
     <div>
       <div class="section-label">Comment Controls</div>
-      <div class="tab-bar">
-        <button class="tab-btn active">Comment</button>
-        <button class="tab-btn">Engagement</button>
-        <button class="tab-btn">Advanced Edit</button>
-      </div>
       <div class="username-row">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <div class="sep-v"></div>
@@ -827,14 +810,15 @@ Thank you.</div>
       <div class="export-row">
         <button class="btn-dl" onclick="exportImg()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
-          Download Comment
+          Download
         </button>
         <button class="btn-cp" onclick="copyImg()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-          Copy
+          Copiar
         </button>
       </div>
     </div>
+    <div class="credits">creado por <span>Samu</span></div>
   </div>
   <div class="right-panel">
     <div class="glow glow-1"></div>
@@ -916,12 +900,6 @@ Thank you.</div>
       catch { alert('Usa Download en este navegador'); }
     });
   }
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
 <\/script>
 </body>
 </html>`;
