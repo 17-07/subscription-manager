@@ -111,6 +111,7 @@
     .card-email::before    { background: radial-gradient(circle at top left, rgba(99,102,241,.08), transparent 60%); }
     .card-domain::before   { background: radial-gradient(circle at top left, rgba(20,184,166,.08), transparent 60%); }
     .card-traffic::before  { background: radial-gradient(circle at top left, rgba(239,68,68,.08), transparent 60%); }
+    .card-tiktok::before   { background: radial-gradient(circle at top left, rgba(254,44,85,.08), transparent 60%); }
 
     .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
     .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
@@ -120,6 +121,7 @@
     .card-email:hover    { box-shadow: 0 12px 40px rgba(99,102,241,.2); }
     .card-domain:hover   { box-shadow: 0 12px 40px rgba(20,184,166,.2); }
     .card-traffic:hover  { box-shadow: 0 12px 40px rgba(239,68,68,.2); }
+    .card-tiktok:hover   { box-shadow: 0 12px 40px rgba(254,44,85,.2); }
 
     .icon {
       width: 48px;
@@ -140,6 +142,7 @@
     .card-email    .icon { background: rgba(99,102,241,.15); }
     .card-domain   .icon { background: rgba(20,184,166,.15); }
     .card-traffic  .icon { background: rgba(239,68,68,.15); }
+    .card-tiktok   .icon { background: rgba(254,44,85,.15); }
 
     .card-body { flex: 1; }
     .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
@@ -160,6 +163,7 @@
     .card-email:hover    .card-arrow { color: #818cf8; }
     .card-domain:hover   .card-arrow { color: #2dd4bf; }
     .card-traffic:hover  .card-arrow { color: #f87171; }
+    .card-tiktok:hover   .card-arrow { color: #fe2c55; }
 
     /* MODALES */
     .modal {
@@ -448,6 +452,15 @@
           <div class="card-arrow">→</div>
         </div>
 
+        <div class="card card-tiktok" onclick="openModal('tiktok-comment-modal')">
+          <div class="icon">🎵</div>
+          <div class="card-body">
+            <div class="card-title">Generador de Comentario TikTok</div>
+            <div class="card-desc">Crea capturas de comentarios de TikTok personalizados con nombre, avatar y texto.</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+
       </div>
     </div>
 
@@ -693,6 +706,17 @@ Thank you.</div>
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <!-- POPUP GENERADOR COMENTARIO TIKTOK -->
+  <div id="tiktok-comment-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">🎵</span> Generador de Comentario TikTok</div>
+        <button class="modal-close" onclick="closeModal('tiktok-comment-modal')">✕</button>
+      </div>
+      <iframe src="commentGenerator.html" title="Generador de Comentario TikTok" allow="clipboard-write" allowfullscreen></iframe>
     </div>
   </div>
 
