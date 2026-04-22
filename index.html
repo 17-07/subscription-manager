@@ -1249,6 +1249,312 @@ Thank you.</div>
 </body>
 </html>`;
 
+    var METADATA_HTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0c; color: #e2e8f0; display: flex; flex-direction: column; overflow: hidden; }
+.wrap { flex: 1; display: flex; flex-direction: column; padding: 18px 20px; gap: 14px; overflow: hidden; }
+.tool-header { text-align: center; flex-shrink: 0; }
+.tool-header h1 { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.tool-header p { font-size: 11px; color: #475569; margin-top: 3px; }
+.drop-zone { border: 2px dashed #1e293b; border-radius: 16px; padding: 44px 24px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; background: #0d0d10; flex-shrink: 0; user-select: none; }
+.drop-zone:hover, .drop-zone.over { border-color: #3b82f6; background: rgba(59,130,246,.05); }
+.drop-icon { display: flex; justify-content: center; margin-bottom: 12px; }
+.drop-icon .material-symbols-outlined { font-size: 48px; color: #334155; }
+.drop-text { font-size: 14px; font-weight: 600; color: #94a3b8; margin-bottom: 4px; }
+.drop-sub { font-size: 12px; color: #475569; }
+.file-pill { display: flex; align-items: center; gap: 12px; background: #0d0d10; border: 1px solid #1e293b; border-radius: 12px; padding: 11px 16px; flex-shrink: 0; }
+.fp-icon { font-size: 1.3rem; flex-shrink: 0; }
+.fp-info { flex: 1; min-width: 0; }
+.fp-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-size { font-size: 11px; color: #475569; margin-top: 2px; }
+.btn-sm { background: none; border: 1px solid #334155; color: #64748b; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+.btn-sm:hover { color: #94a3b8; border-color: #475569; }
+.content { flex: 1; display: flex; gap: 14px; overflow: hidden; min-height: 0; }
+.left-col { width: 210px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+.right-col { flex: 1; background: #0d0d10; border: 1px solid #1e293b; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+.status-box { background: #0d0d10; border: 1px solid #1e293b; border-radius: 10px; padding: 12px; flex-shrink: 0; }
+.status-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #475569; margin-bottom: 8px; }
+.srow { display: flex; align-items: flex-start; gap: 7px; margin-bottom: 5px; }
+.srow:last-child { margin-bottom: 0; }
+.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.dot-red { background: #ef4444; }
+.dot-green { background: #22c55e; }
+.stxt { font-size: 11px; color: #64748b; line-height: 1.4; }
+.prog-wrap { background: #0d0d10; border: 1px solid #1e293b; border-radius: 10px; padding: 12px; flex-shrink: 0; }
+.prog-bg { background: #1e293b; border-radius: 4px; height: 4px; overflow: hidden; margin-bottom: 8px; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #06b6d4); border-radius: 4px; width: 0%; transition: width .2s; }
+.prog-txt { font-size: 11px; color: #475569; text-align: center; }
+.btn-clean { width: 100%; padding: 12px; border-radius: 10px; border: none; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: filter .15s; flex-shrink: 0; }
+.btn-clean:hover:not(:disabled) { filter: brightness(1.1); }
+.btn-clean:disabled { opacity: .5; cursor: not-allowed; }
+.btn-dl { width: 100%; padding: 12px; border-radius: 10px; border: none; background: linear-gradient(135deg, #059669, #34d399); color: white; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: filter .15s; text-decoration: none; flex-shrink: 0; }
+.btn-dl:hover { filter: brightness(1.1); }
+.meta-hdr { padding: 10px 14px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.meta-htitle { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #475569; }
+.badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.badge-dirty { background: rgba(239,68,68,.15); color: #f87171; }
+.badge-clean { background: rgba(34,197,94,.15); color: #4ade80; }
+.meta-list { overflow-y: auto; flex: 1; padding: 6px; }
+.mrow { display: flex; gap: 8px; padding: 6px 8px; border-radius: 7px; }
+.mrow:hover { background: rgba(255,255,255,.02); }
+.mkey { font-size: 11px; font-weight: 600; color: #475569; width: 148px; flex-shrink: 0; padding-top: 1px; }
+.mval { font-size: 12px; color: #e2e8f0; flex: 1; word-break: break-all; line-height: 1.4; }
+.mval-empty { color: #334155; font-style: italic; }
+.mval-flag { color: #f87171; }
+input[type=file] { display: none; }
+</style>
+</head>
+<body>
+<input type="file" id="fi" accept="video/*,image/*" onchange="handleFile(this.files[0])"/>
+<div class="wrap">
+  <div class="tool-header">
+    <h1>Borrador de Metadata</h1>
+    <p>Limpia tus archivos para evitar el shadowban de TikTok</p>
+  </div>
+  <div class="drop-zone" id="dz"
+       onclick="document.getElementById('fi').click()"
+       ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+    <div class="drop-icon"><span class="material-symbols-outlined">download</span></div>
+    <div class="drop-text">Selecciona un archivo o arr\u00E1stralo aqu\u00ED</div>
+    <div class="drop-sub">MP4, MOV, AVI y m\u00E1s formatos de v\u00EDdeo</div>
+  </div>
+  <div class="file-pill" id="fp" style="display:none">
+    <span class="fp-icon">\uD83C\uDFAC</span>
+    <div class="fp-info">
+      <div class="fp-name" id="fp-name"></div>
+      <div class="fp-size" id="fp-size"></div>
+    </div>
+    <button class="btn-sm" onclick="resetTool()">Cambiar</button>
+  </div>
+  <div class="content" id="content" style="display:none">
+    <div class="left-col">
+      <div class="status-box" id="status-box">
+        <div class="status-lbl">Riesgos detectados</div>
+        <div id="srows"></div>
+      </div>
+      <div class="prog-wrap" id="prog-wrap" style="display:none">
+        <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+        <div class="prog-txt" id="prog-txt">Procesando...</div>
+      </div>
+      <button class="btn-clean" id="btn-clean" onclick="doClean()">
+        <span class="material-symbols-outlined" style="font-size:17px">delete_sweep</span>
+        Limpiar mi archivo
+      </button>
+      <a class="btn-dl" id="btn-dl" style="display:none" href="#">
+        <span class="material-symbols-outlined" style="font-size:17px">download</span>
+        Descargar archivo limpio
+      </a>
+    </div>
+    <div class="right-col">
+      <div class="meta-hdr">
+        <span class="meta-htitle" id="meta-htitle">Metadata original</span>
+        <span class="badge" id="meta-badge"></span>
+      </div>
+      <div class="meta-list" id="meta-list"></div>
+    </div>
+  </div>
+</div>
+<script>
+var curFile=null, curBuf=null, curMeta=null, cleanBuf=null;
+function fmtSz(b){if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(2)+' MB';}
+function fmtDur(s){if(!s||isNaN(s))return null;return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+function ext(n){return n.split('.').pop().toUpperCase();}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+
+function parseMP4(buf){
+  var by=new Uint8Array(buf),vw=new DataView(buf),m={};
+  function ru32(o){return vw.getUint32(o,false);}
+  function rstr(o){return String.fromCharCode(by[o],by[o+1],by[o+2],by[o+3]);}
+  function mp4dt(s){if(!s)return null;var u=(s-2082844800)*1000;if(u<0||u>9999999999999)return null;return new Date(u).toLocaleString('es-ES');}
+  function rdata(s,e){
+    var o=s;
+    while(o+8<=e){var sz=ru32(o),tp=rstr(o+4);if(sz<8)break;
+      if(tp==='data'&&sz>16){var d=by.slice(o+16,o+sz),t='';
+        for(var i=0;i<d.length;i++){if(d[i]>=32&&d[i]<127)t+=String.fromCharCode(d[i]);}
+        return t.trim()||null;}
+      o+=sz;}return null;}
+  function parseTags(s,e){
+    var o=s;
+    while(o+8<=e){var sz=ru32(o);if(sz<8)break;
+      var b0=by[o+4],b1=by[o+5],b2=by[o+6],b3=by[o+7];
+      var v=rdata(o+8,o+sz);
+      if(v){
+        if(b0===0xa9&&b1===116&&b2===111&&b3===111)m.software=v;
+        else if(b0===0xa9&&b1===110&&b2===97&&b3===109)m.title=v;
+        else if(b0===0xa9&&b1===100&&b2===97&&b3===121)m.year=v;
+        else if(b0===0xa9&&b1===65&&b2===82&&b3===84)m.artist=v;
+        else if(b0===100&&b1===101&&b2===115&&b3===99)m.description=v;
+        else if(b0===0xa9&&b1===99&&b2===109&&b3===116)m.comment=v;
+        else if(b0===99&&b1===112&&b2===114&&b3===116)m.copyright=v;
+      }
+      o+=sz;}}
+  function walk(s,e,d){
+    if(d>8||s>=e)return;var o=s;
+    while(o+8<=e){var sz=ru32(o);if(sz===0)sz=e-o;if(sz<8)break;
+      var tp=rstr(o+4);
+      if(tp==='ftyp'){m.brand=rstr(o+8);}
+      else if(tp==='mvhd'){
+        var ver=by[o+8];
+        if(ver===0){m.ctime=mp4dt(ru32(o+12));m.mtime=mp4dt(ru32(o+16));var ts=ru32(o+20),dur=ru32(o+24);if(ts)m.dur=fmtDur(dur/ts);}
+        else{var ct=vw.getUint32(o+12,false)*4294967296+vw.getUint32(o+16,false);var mt=vw.getUint32(o+20,false)*4294967296+vw.getUint32(o+24,false);m.ctime=mp4dt(ct);m.mtime=mp4dt(mt);var ts2=ru32(o+28),dur2=vw.getUint32(o+32,false)*4294967296+vw.getUint32(o+36,false);if(ts2)m.dur=fmtDur(dur2/ts2);}}
+      else if(tp==='udta'){m.hasUdta=true;parseTags(o+8,o+sz);}
+      else if(tp==='ilst'){parseTags(o+8,o+sz);}
+      else if(tp==='XMP_'){m.hasXMP=true;}
+      else if('moov,trak,mdia,minf,stbl,edts,dinf'.indexOf(tp)>=0){walk(o+8,o+sz,d+1);}
+      else if(tp==='meta'){walk(o+12,o+sz,d+1);}
+      o+=sz;}}
+  try{walk(0,buf.byteLength,0);}catch(e2){}
+  return m;
+}
+
+function cleanMP4(buf){
+  var by=new Uint8Array(buf.slice(0)),vw=new DataView(by.buffer);
+  function ru32(o){return vw.getUint32(o,false);}
+  function rstr(o){return String.fromCharCode(by[o],by[o+1],by[o+2],by[o+3]);}
+  function wstr(o,s){for(var i=0;i<4;i++)by[o+i]=s.charCodeAt(i);}
+  function wu32(o,v){vw.setUint32(o,v,false);}
+  function zero(a,b){for(var i=a;i<b&&i<by.length;i++)by[i]=0;}
+  function walk(s,e,d){
+    if(d>8||s>=e)return;var o=s;
+    while(o+8<=e){var sz=ru32(o);if(sz===0)sz=e-o;if(sz<8)break;
+      var tp=rstr(o+4);
+      if(tp==='udta'||tp==='XMP_'||tp==='ilst'){wstr(o+4,'free');zero(o+8,o+sz);}
+      else if(tp==='mvhd'||tp==='tkhd'||tp==='mdhd'){
+        var ver=by[o+8];
+        if(ver===0){wu32(o+12,0);wu32(o+16,0);}
+        else{wu32(o+12,0);wu32(o+16,0);wu32(o+20,0);wu32(o+24,0);}}
+      else if('moov,trak,mdia,minf,stbl,edts,dinf'.indexOf(tp)>=0){walk(o+8,o+sz,d+1);}
+      else if(tp==='meta'){walk(o+12,o+sz,d+1);}
+      o+=sz;}}
+  try{walk(0,by.length,0);}catch(e2){}
+  return by.buffer;
+}
+
+function buildRows(m,file,clean){
+  return[
+    ['FileName',file.name,false],
+    ['FileSize',fmtSz(file.size),false],
+    ['FileType',ext(file.name),false],
+    ['MIMEType',file.type||'video/mp4',false],
+    ['Duration',m.dur||null,false],
+    ['Brand / Format',clean?null:(m.brand||null),false],
+    ['Creation Time',clean?null:m.ctime,!clean&&!!m.ctime],
+    ['Modification Time',clean?null:m.mtime,!clean&&!!m.mtime],
+    ['Software / Encoder',clean?null:(m.software||null),!clean&&!!m.software],
+    ['Title',clean?null:(m.title||null),!clean&&!!m.title],
+    ['Artist',clean?null:(m.artist||null),false],
+    ['Year',clean?null:(m.year||null),false],
+    ['Comment',clean?null:(m.comment||null),false],
+    ['Copyright',clean?null:(m.copyright||null),false],
+    ['Description',clean?null:(m.description||null),false],
+    ['XMP Data',clean?null:(m.hasXMP?'Presente':null),!clean&&!!m.hasXMP],
+    ['User Data (udta)',clean?null:(m.hasUdta?'Presente':null),!clean&&!!m.hasUdta],
+    ['GPS Data',null,false],
+    ['Location Info',null,false],
+  ];
+}
+
+function renderRows(rows,clean){
+  var html='';
+  rows.forEach(function(r){
+    var key=r[0],val=r[1],flag=r[2];
+    var cls=val===null?'mval mval-empty':(flag?'mval mval-flag':'mval');
+    var disp=val===null?(clean?'\u2014\u00A0eliminado':'\u2014'):esc(String(val));
+    html+='<div class="mrow"><span class="mkey">'+esc(key)+'</span><span class="'+cls+'">'+disp+'</span></div>';
+  });
+  document.getElementById('meta-list').innerHTML=html;
+}
+
+function renderStatus(m,clean){
+  var risks=[];
+  if(!clean){
+    if(m.ctime)risks.push('Fecha de creaci\u00F3n');
+    if(m.mtime)risks.push('Fecha de modificaci\u00F3n');
+    if(m.software)risks.push('Software: '+esc(m.software));
+    if(m.hasUdta)risks.push('User Data (udta)');
+    if(m.hasXMP)risks.push('XMP Data');
+    if(m.title)risks.push('T\u00EDtulo embebido');
+  }
+  var html='';
+  if(clean||risks.length===0){
+    html='<div class="srow"><div class="dot dot-green"></div><div class="stxt">Archivo completamente limpio \u2713</div></div>';
+  } else {
+    risks.forEach(function(r){html+='<div class="srow"><div class="dot dot-red"></div><div class="stxt">'+r+'</div></div>';});
+  }
+  document.getElementById('srows').innerHTML=html;
+}
+
+async function handleFile(file){
+  if(!file)return;
+  curFile=file;curBuf=null;curMeta=null;cleanBuf=null;
+  document.getElementById('fp-name').textContent=file.name;
+  document.getElementById('fp-size').textContent=fmtSz(file.size);
+  document.getElementById('dz').style.display='none';
+  document.getElementById('fp').style.display='flex';
+  document.getElementById('content').style.display='flex';
+  document.getElementById('btn-dl').style.display='none';
+  document.getElementById('btn-clean').style.display='flex';
+  document.getElementById('btn-clean').disabled=false;
+  document.getElementById('prog-wrap').style.display='none';
+  curBuf=await file.arrayBuffer();
+  curMeta=parseMP4(curBuf);
+  renderRows(buildRows(curMeta,file,false),false);
+  renderStatus(curMeta,false);
+  document.getElementById('meta-htitle').textContent='Metadata original';
+  document.getElementById('meta-badge').className='badge badge-dirty';
+  document.getElementById('meta-badge').textContent='Sin limpiar';
+}
+
+async function doClean(){
+  if(!curBuf)return;
+  var btn=document.getElementById('btn-clean');
+  btn.disabled=true;
+  var pw=document.getElementById('prog-wrap'),pf=document.getElementById('prog-fill'),pt=document.getElementById('prog-txt');
+  pw.style.display='block';
+  pt.textContent='Analizando archivo...';pf.style.width='15%';
+  await wait(350);
+  pt.textContent='Eliminando metadata...';pf.style.width='55%';
+  await wait(500);
+  cleanBuf=cleanMP4(curBuf);
+  pf.style.width='85%';pt.textContent='Verificando resultado...';
+  await wait(300);
+  pf.style.width='100%';pt.textContent='\u00A1Completado!';
+  await wait(400);
+  pw.style.display='none';btn.style.display='none';
+  var m2=parseMP4(cleanBuf);
+  renderRows(buildRows(m2,curFile,true),true);
+  renderStatus(m2,true);
+  document.getElementById('meta-htitle').textContent='Metadata tras limpieza';
+  document.getElementById('meta-badge').className='badge badge-clean';
+  document.getElementById('meta-badge').textContent='Limpio';
+  var blob=new Blob([cleanBuf],{type:curFile.type||'video/mp4'});
+  var url=URL.createObjectURL(blob);
+  var dl=document.getElementById('btn-dl');
+  dl.href=url;dl.download='clean_'+curFile.name;dl.style.display='flex';
+}
+
+function resetTool(){
+  curFile=null;curBuf=null;curMeta=null;cleanBuf=null;
+  document.getElementById('dz').style.display='';
+  document.getElementById('fp').style.display='none';
+  document.getElementById('content').style.display='none';
+  document.getElementById('fi').value='';
+}
+function onDragOver(e){e.preventDefault();e.currentTarget.classList.add('over');}
+function onDragLeave(e){e.currentTarget.classList.remove('over');}
+function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');var f=e.dataTransfer.files[0];if(f)handleFile(f);}
+<\/script>
+</body>
+</html>`;
+
     function copyEmail() {
       var text = document.getElementById('email-text').innerText;
       navigator.clipboard.writeText(text).then(function() {
