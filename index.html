@@ -471,6 +471,254 @@
     </div>
   </div>
 
+  <!-- POPUP GENERADOR DE REVIEWS -->
+  <div id="reviews-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">✍️</span> Generador de Reviews</div>
+        <button class="modal-close" onclick="closeModal('reviews-modal')">✕</button>
+      </div>
+      <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed"
+              title="Review Generator — Dropshipping Pipeline"
+              allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- POPUP CONFIGURACIÓN DOMINIO -->
+  <div id="domain-modal" class="modal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">🌐</span> Configuración de Dominio — Nominalia</div>
+        <button class="modal-close" onclick="closeModal('domain-modal')">✕</button>
+      </div>
+      <div class="steps-body">
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Acceder a la configuración DNS</div>
+            <div class="step-path">
+              <span class="step-path-item">Gestionar dominio</span>
+              <span class="step-path-arrow">›</span>
+              <span class="step-path-item">Dominio y DNS</span>
+              <span class="step-path-arrow">›</span>
+              <span class="step-path-item">Asociaciones y subdominios</span>
+              <span class="step-path-arrow">›</span>
+              <span class="step-path-item">Configuración DNS</span>
+            </div>
+            <div class="step-desc">Una vez dentro, <strong style="color:#e2e8f0">borrar el registro tipo A</strong> que aparece por defecto.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Añadir registro A</div>
+            <div class="step-code">Nombre: (vacío)<br>Dirección IP: 23.227.38.65</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Ir a Gestión Avanzada</div>
+            <div class="step-warning">⚠️ <strong>IMPORTANTE:</strong> Borrar el registro <code style="background:#2d1a00;padding:1px 5px;border-radius:4px">www.(DOMINIO).</code> de tipo CNAME. Es el único <code style="background:#2d1a00;padding:1px 5px;border-radius:4px">www</code> que hay — está entre <code style="background:#2d1a00;padding:1px 5px;border-radius:4px">pop.(DOMINIO).</code> y <code style="background:#2d1a00;padding:1px 5px;border-radius:4px">(DOMINIO).</code></div>
+            <div class="step-desc" style="margin-top:10px">Una vez borrado, añadir un nuevo registro CNAME:</div>
+            <div class="step-code">www &nbsp; 900 &nbsp; CNAME &nbsp; shops.myshopify.com</div>
+            <div class="step-desc" style="margin-top:10px">Pulsar <strong style="color:#e2e8f0">Aplicar</strong> y esperar unos minutos.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Conectar en Shopify</div>
+            <div class="step-desc">Ir a Shopify → <strong style="color:#e2e8f0">Conectar dominio existente</strong> e introducir el dominio. Listo.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP TEST ORDER EMAIL -->
+  <div id="email-modal" class="modal">
+    <div class="modal-box" style="max-width:600px">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">✉️</span> Test Order Email</div>
+        <button class="modal-close" onclick="closeModal('email-modal')">✕</button>
+      </div>
+      <div class="email-body">
+        <div class="email-subject">Subject</div>
+        <div class="email-subject-value">Refund Request - Order #1006 — Immediate Action Required</div>
+        <div class="email-content" id="email-text">Hello,
+
+I'm writing regarding Order #XXXX. I purchased a digital product that I have not downloaded, accessed, or used in any way. No delivery has taken place.
+
+I am requesting an immediate cancellation and full refund.
+
+I want to be straightforward: if this refund is not processed promptly, I will have no choice but to initiate a chargeback through my bank. I would prefer to resolve this directly with you, but I will not hesitate to escalate if necessary.
+
+Please confirm the cancellation and refund at your earliest convenience.
+
+Thank you.</div>
+        <button class="copy-btn" onclick="copyEmail()">Copiar mensaje</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP REDIRECCIÓN DE TRÁFICO ORGÁNICO -->
+  <div id="traffic-modal" class="modal">
+    <div class="modal-box" style="max-width:660px">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">🎯</span> Redirección de Tráfico Orgánico</div>
+        <button class="modal-close" onclick="closeModal('traffic-modal')">✕</button>
+      </div>
+      <div class="steps-body">
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">1</div>
+          <div class="step-content">
+            <div class="step-title">IP dedicada</div>
+            <div class="step-desc">Si no tienes IP dedicada, cómprala. Es la base para que la VPN funcione correctamente y la cuenta apunte al país que quieres.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">2</div>
+          <div class="step-content">
+            <div class="step-title">Calentar la cuenta en el país objetivo</div>
+            <div class="step-desc">Volver a "calentar" la cuenta con contenido en inglés (o del país target): dar like, comentar y seguir cuentas <strong style="color:#e2e8f0">del país al que quieres dirigir el tráfico</strong>, igual que se hace para calentar una cuenta de producto.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">3</div>
+          <div class="step-content">
+            <div class="step-title">Verificar los "Sonidos" de la cuenta</div>
+            <div class="step-desc">Ve a <strong style="color:#e2e8f0">Sonidos</strong> dentro de la app y comprueba que aparece el <strong style="color:#e2e8f0">TOP 50 sonidos del país</strong> donde tienes la VPN. Si no aparece ese ranking, la cuenta está comprometida y no va a funcionar bien.</div>
+            <div class="step-warning">⚠️ Si el TOP 50 no muestra el país correcto, la cuenta está "jodida" — necesita más calentamiento o es irrecuperable.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">4</div>
+          <div class="step-content">
+            <div class="step-title">Usa música del país objetivo</div>
+            <div class="step-desc">Evita sonidos en otros idiomas, edits de música de anime, audios de memes o canciones graciosas. Usa <strong style="color:#e2e8f0">música del país al que quieres llegar</strong>: si es España, canciones en español; si es EEUU, música en inglés.</div>
+            <div class="step-desc" style="margin-top:8px">Para verificar un audio: pulsa sobre él y mira qué vídeos aparecen primero. Si son de fuera del target, <strong style="color:#f87171">no lo uses</strong>.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">5</div>
+          <div class="step-content">
+            <div class="step-title">Texto a Voz nativo de la red social</div>
+            <div class="step-desc">Usa el <strong style="color:#e2e8f0">Texto a Voz de la propia plataforma</strong> (TikTok, Instagram…) siempre que sea posible. Si el contenido no tiene texto, la IA también funciona.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">6</div>
+          <div class="step-content">
+            <div class="step-title">Para target 100% EEUU: géneros concretos</div>
+            <div class="step-desc">Si apuntas al mercado americano, prioriza estos géneros:</div>
+            <div class="step-path" style="margin-top:8px">
+              <span class="step-path-item">🤠 Country</span>
+              <span class="step-path-item">🎤 Rap</span>
+              <span class="step-path-item">🎵 Pop</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">7</div>
+          <div class="step-content">
+            <div class="step-title">El nicho afecta a la segmentación</div>
+            <div class="step-desc">El nicho del producto influye en el tráfico recibido aunque es difícil de controlar. Por ejemplo, si la ropa es muy viral en India, el algoritmo puede mostrarlo allí por "segmentación de nicho". Tenlo en cuenta al elegir qué productos promocionar.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">8</div>
+          <div class="step-content">
+            <div class="step-title">Quitar restricción de edad en Instagram</div>
+            <div class="step-desc">Cambia la cuenta de Instagram a <strong style="color:#e2e8f0">cuenta de empresa</strong>. Esto elimina automáticamente la restricción de edad que limita el alcance de los vídeos.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">9</div>
+          <div class="step-content">
+            <div class="step-title">Palabras clave del país objetivo (ocultas)</div>
+            <div class="step-desc">Añade palabras clave del país objetivo en el vídeo o descripción y <strong style="color:#e2e8f0">escóndelas</strong> para que el algoritmo las lea sin que el usuario las vea. Métodos:</div>
+            <div class="step-code">
+              1. Texto mismo color que el fondo<br>
+              2. Tamaño de fuente mínimo (1–2px)<br>
+              3. Texto detrás de un elemento/imagen
+            </div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step">
+          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">10</div>
+          <div class="step-content">
+            <div class="step-title">Publicar en horario nocturno de los países no deseados</div>
+            <div class="step-desc">El primer tráfico que recibe un vídeo define gran parte de su distribución. Publica cuando los países que <strong style="color:#f87171">no</strong> quieres estén dormidos.</div>
+            <div class="step-code">Ejemplo: 9 AM España = 3 AM Latam<br>→ El primer tráfico será español</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP DESCARGADOR DE VÍDEOS -->
+  <div id="downloader-modal" class="modal">
+    <div class="modal-box" style="max-width:600px">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">⬇️</span> Descargador de Vídeos</div>
+        <button class="modal-close" onclick="closeModal('downloader-modal')">✕</button>
+      </div>
+      <iframe id="downloader-frame" title="Descargador de Vídeos" allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- POPUP GENERADOR COMENTARIO TIKTOK -->
+  <div id="tiktok-comment-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">🎵</span> Generador de Comentario TikTok</div>
+        <button class="modal-close" onclick="closeModal('tiktok-comment-modal')">✕</button>
+      </div>
+      <iframe id="tiktok-comment-frame" title="Generador de Comentario TikTok" allow="clipboard-write" allowfullscreen></iframe>
+    </div>
+  </div>
+
   <script>
     var DOWNLOADER_HTML = `<!DOCTYPE html>
 <html lang="es">
