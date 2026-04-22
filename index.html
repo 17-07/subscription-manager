@@ -3,803 +3,383 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Samudrop — Herramientas</title>
+  <title>Samudrop — Suite de Herramientas para Dropshipping</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #060609;
+      --bg-card:   #0c0b10;
+      --bg-card-h: #100e15;
+      --border:    rgba(255,255,255,0.055);
+      --border-h:  rgba(200,30,30,0.25);
+      --red:       #dc2626;
+      --red-l:     #f87171;
+      --red-d:     #991b1b;
+      --text:      #f1f5f9;
+      --text-2:    #8b95a8;
+      --text-3:    #3d4555;
+      --r:         18px;
+    }
+
+    html { scroll-behavior: smooth; }
     body {
-      background: #020617;
-      color: #e2e8f0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 24px;
+      background: var(--bg); color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh; -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1e1e2e; border-radius: 4px; }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 62px;
+      background: rgba(6,6,9,0.82);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-mark {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: linear-gradient(135deg, var(--red), var(--red-d));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 900; color: #fff;
+      box-shadow: 0 0 20px rgba(220,38,38,0.28);
+    }
+    .nav-logo-text { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+    .nav-right { display: flex; align-items: center; gap: 6px; }
+    .nav-link {
+      font-size: 13px; font-weight: 500; color: var(--text-2);
+      padding: 6px 14px; border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+      cursor: pointer; border: none; background: none; font-family: inherit;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .nav-pill {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      background: rgba(220,38,38,0.1); color: var(--red-l);
+      border: 1px solid rgba(220,38,38,0.18); padding: 4px 12px; border-radius: 20px;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 56px;
+    /* PAGE */
+    .page { padding-top: 62px; max-width: 1100px; margin: 0 auto; padding-left: 28px; padding-right: 28px; }
+
+    /* HERO */
+    .hero { position: relative; padding: 96px 0 80px; text-align: center; overflow: hidden; }
+    .hero-orb {
+      position: absolute; width: 820px; height: 820px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(220,38,38,0.055) 0%, transparent 65%);
+      top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none;
     }
-
-    .header h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #a78bfa, #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.02em;
+    .hero-orb-2 {
+      position: absolute; width: 380px; height: 380px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(153,27,27,0.045) 0%, transparent 70%);
+      top: 10%; left: 65%; pointer-events: none;
     }
-
-    .header p {
-      color: #475569;
-      font-size: 15px;
-      margin-top: 8px;
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.16);
+      border-radius: 20px; padding: 6px 16px 6px 12px;
+      font-size: 12px; font-weight: 600; color: #f87171;
+      margin-bottom: 36px; letter-spacing: 0.02em;
+      animation: fadeUp 0.7s ease both;
     }
-
-    .sections {
-      width: 100%;
-      max-width: 960px;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
+    .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red-l); animation: blink 2.5s ease infinite; }
+    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.75)} }
+    .hero-title {
+      font-size: clamp(2.6rem,5.5vw,4.2rem); font-weight: 900;
+      letter-spacing: -0.04em; line-height: 1.06;
+      margin-bottom: 22px; animation: fadeUp 0.7s ease 0.08s both;
     }
-
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .section-label span {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: #475569;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #1e293b;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      border-radius: 20px;
-      padding: 28px 24px;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 14px;
-      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transition: opacity 0.15s;
-      border-radius: 20px;
-    }
-
-    .card:hover { transform: translateY(-3px); border-color: #334155; }
-    .card:hover::before { opacity: 1; }
-
-    .card-subs::before     { background: radial-gradient(circle at top left, rgba(124,58,237,.08), transparent 60%); }
-    .card-reviews::before  { background: radial-gradient(circle at top left, rgba(244,114,182,.08), transparent 60%); }
-    .card-policies::before { background: radial-gradient(circle at top left, rgba(34,211,238,.08), transparent 60%); }
-    .card-ia::before       { background: radial-gradient(circle at top left, rgba(251,146,60,.08), transparent 60%); }
-    .card-liquid::before   { background: radial-gradient(circle at top left, rgba(52,211,153,.08), transparent 60%); }
-    .card-email::before    { background: radial-gradient(circle at top left, rgba(99,102,241,.08), transparent 60%); }
-    .card-domain::before   { background: radial-gradient(circle at top left, rgba(20,184,166,.08), transparent 60%); }
-    .card-traffic::before  { background: radial-gradient(circle at top left, rgba(239,68,68,.08), transparent 60%); }
-    .card-tiktok::before      { background: radial-gradient(circle at top left, rgba(254,44,85,.08), transparent 60%); }
-    .card-downloader::before  { background: radial-gradient(circle at top left, rgba(14,165,233,.08), transparent 60%); }
-    .card-kling::before       { background: radial-gradient(circle at top left, rgba(139,92,246,.08), transparent 60%); }
-    .card-banana::before      { background: radial-gradient(circle at top left, rgba(234,179,8,.08), transparent 60%); }
-    .card-keywords::before    { background: radial-gradient(circle at top left, rgba(251,146,60,.08), transparent 60%); }
-    .card-meta::before        { background: radial-gradient(circle at top left, rgba(59,130,246,.08), transparent 60%); }
-
-    .card-subs:hover     { box-shadow: 0 12px 40px rgba(124,58,237,.2); }
-    .card-reviews:hover  { box-shadow: 0 12px 40px rgba(244,114,182,.2); }
-    .card-policies:hover { box-shadow: 0 12px 40px rgba(34,211,238,.2); }
-    .card-ia:hover       { box-shadow: 0 12px 40px rgba(251,146,60,.2); }
-    .card-liquid:hover   { box-shadow: 0 12px 40px rgba(52,211,153,.2); }
-    .card-email:hover    { box-shadow: 0 12px 40px rgba(99,102,241,.2); }
-    .card-domain:hover   { box-shadow: 0 12px 40px rgba(20,184,166,.2); }
-    .card-traffic:hover  { box-shadow: 0 12px 40px rgba(239,68,68,.2); }
-    .card-tiktok:hover      { box-shadow: 0 12px 40px rgba(254,44,85,.2); }
-    .card-downloader:hover  { box-shadow: 0 12px 40px rgba(14,165,233,.2); }
-    .card-kling:hover       { box-shadow: 0 12px 40px rgba(139,92,246,.2); }
-    .card-banana:hover      { box-shadow: 0 12px 40px rgba(234,179,8,.2); }
-    .card-keywords:hover    { box-shadow: 0 12px 40px rgba(251,146,60,.2); }
-    .card-meta:hover        { box-shadow: 0 12px 40px rgba(59,130,246,.2); }
-
-    .icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .card-subs     .icon { background: rgba(124,58,237,.15); }
-    .card-reviews  .icon { background: rgba(244,114,182,.15); }
-    .card-policies .icon { background: rgba(34,211,238,.15); }
-    .card-ia       .icon { background: rgba(251,146,60,.15); }
-    .card-liquid   .icon { background: rgba(52,211,153,.15); }
-    .card-email    .icon { background: rgba(99,102,241,.15); }
-    .card-domain   .icon { background: rgba(20,184,166,.15); }
-    .card-traffic  .icon { background: rgba(239,68,68,.15); }
-    .card-tiktok      .icon { background: rgba(254,44,85,.15); }
-    .card-downloader  .icon { background: rgba(14,165,233,.15); }
-    .card-kling       .icon { background: rgba(139,92,246,.15); }
-    .card-banana      .icon { background: rgba(234,179,8,.15); }
-    .card-keywords    .icon { background: rgba(251,146,60,.15); }
-    .card-meta        .icon { background: rgba(59,130,246,.15); }
-
-    .card-body { flex: 1; }
-    .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
-    .card-desc  { font-size: 13px; color: #64748b; line-height: 1.5; }
-
-    .card-arrow {
-      font-size: 1.1rem;
-      color: #334155;
-      transition: color 0.15s, transform 0.15s;
-      align-self: flex-end;
-    }
-
-    .card:hover          .card-arrow { color: #a78bfa; transform: translateX(3px); }
-    .card-reviews:hover  .card-arrow { color: #f472b6; }
-    .card-policies:hover .card-arrow { color: #22d3ee; }
-    .card-ia:hover       .card-arrow { color: #fb923c; }
-    .card-liquid:hover   .card-arrow { color: #34d399; }
-    .card-email:hover    .card-arrow { color: #818cf8; }
-    .card-domain:hover   .card-arrow { color: #2dd4bf; }
-    .card-traffic:hover  .card-arrow { color: #f87171; }
-    .card-tiktok:hover      .card-arrow { color: #fe2c55; }
-    .card-downloader:hover  .card-arrow { color: #0ea5e9; }
-    .card-kling:hover       .card-arrow { color: #8b5cf6; }
-    .card-banana:hover      .card-arrow { color: #eab308; }
-    .card-keywords:hover    .card-arrow { color: #fb923c; }
-    .card-meta:hover        .card-arrow { color: #3b82f6; }
-
-    /* MODALES */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      background: rgba(2,6,23,.85);
-      backdrop-filter: blur(4px);
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .modal.open { display: flex; }
-
-    .modal-box {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 1200px;
-      max-height: 95vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 25px 60px rgba(0,0,0,.6);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid #1e293b;
-      flex-shrink: 0;
-    }
-
-    .modal-header-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .modal-close {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    iframe {
+    .title-line1 { display: block; color: var(--text); }
+    .title-line2 {
       display: block;
-      width: 100%;
-      height: calc(95vh - 65px);
-      border: none;
+      background: linear-gradient(135deg, #f87171 0%, #dc2626 50%, #7f1d1d 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-
-    .email-body {
-      padding: 24px;
-      overflow-y: auto;
+    .hero-sub {
+      font-size: 16px; color: var(--text-2); max-width: 460px;
+      margin: 0 auto 44px; line-height: 1.7;
+      animation: fadeUp 0.7s ease 0.16s both;
     }
-
-    .email-subject {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: #475569;
-      margin-bottom: 8px;
+    .hero-stats {
+      display: inline-flex; align-items: stretch;
+      background: rgba(255,255,255,0.025); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden; animation: fadeUp 0.7s ease 0.24s both;
     }
+    .hero-stat { padding: 16px 32px; text-align: center; }
+    .hero-stat + .hero-stat { border-left: 1px solid var(--border); }
+    .stat-num { font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.03em; display: block; }
+    .stat-lbl { font-size: 10px; color: var(--text-3); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-top: 3px; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
 
-    .email-subject-value {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #e2e8f0;
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
-
-    .email-content {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 20px;
-      font-size: 14px;
-      line-height: 1.7;
-      color: #cbd5e1;
-      white-space: pre-wrap;
-      margin-bottom: 16px;
-    }
-
-    .copy-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
-      border: none;
-      color: white;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-
-    .copy-btn:hover { opacity: .85; }
-
-    /* STEPS */
-    .steps-body {
-      padding: 24px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .step {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .step-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #14b8a6, #0d9488);
-      color: white;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .step-content { flex: 1; }
-
-    .step-title {
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 8px;
-      color: #e2e8f0;
-    }
-
-    .step-path {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-
-    .step-path-item {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-
-    .step-path-arrow { color: #475569; font-size: 11px; }
-
-    .step-desc {
-      font-size: 13px;
-      color: #64748b;
-      line-height: 1.6;
-    }
-
-    .step-code {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-family: monospace;
-      font-size: 13px;
-      color: #7dd3fc;
-      margin-top: 8px;
-    }
-
-    .step-warning {
-      background: #1c1008;
-      border: 1px solid #92400e44;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #fbbf24;
-      margin-top: 8px;
-      line-height: 1.5;
-    }
-
-    .step-divider {
+    /* SECTIONS */
+    .section { padding: 28px 0 60px; }
+    .section-hdr { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; }
+    .section-eyebrow { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+    .eyebrow-bar { width: 22px; height: 2px; background: var(--red); border-radius: 2px; }
+    .eyebrow-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--red-l); }
+    .section-title { font-size: 21px; font-weight: 800; letter-spacing: -0.025em; color: var(--text); }
+    .section-meta { font-size: 12px; font-weight: 600; color: var(--text-3); padding-bottom: 3px; }
+    .section-divider {
       height: 1px;
-      background: #1e293b;
+      background: linear-gradient(90deg,transparent,rgba(255,255,255,0.04) 40%,rgba(255,255,255,0.04) 60%,transparent);
     }
 
-    .keywords-body { padding: 24px; overflow-y: auto; }
-    .keywords-note { font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.5; }
-    .keywords-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .kw {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #fbbf24;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-family: monospace;
-      letter-spacing: .02em;
+    /* GRID */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 14px; }
+
+    /* CARD */
+    .card {
+      position: relative; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 24px 24px 20px;
+      cursor: pointer; text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; gap: 14px; overflow: hidden;
+      opacity: 0; transform: translateY(28px);
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.3s, border-color 0.3s, background 0.3s, opacity 0.4s;
     }
+    .card.in { opacity: 1; transform: translateY(0); }
+    .card::before {
+      content:''; position:absolute; inset:0; border-radius:var(--r);
+      background:radial-gradient(circle 200px at var(--mx,50%) var(--my,50%),rgba(200,30,30,0.065),transparent 70%);
+      opacity:0; transition:opacity 0.35s; pointer-events:none;
+    }
+    .card::after {
+      content:''; position:absolute; top:0; left:12%; right:12%; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(220,38,38,0.45),transparent);
+      opacity:0; transition:opacity 0.3s;
+    }
+    .card:hover { transform:translateY(-5px); border-color:var(--border-h); background:var(--bg-card-h); box-shadow:0 24px 64px rgba(0,0,0,.45),0 0 0 1px rgba(200,30,30,0.07); }
+    .card:hover::before { opacity:1; }
+    .card:hover::after  { opacity:1; }
+
+    .card-top { display:flex; align-items:flex-start; justify-content:space-between; }
+    .icon { width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+    .card-tag { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); padding:3px 9px; border-radius:6px; }
+    .card-body { flex:1; }
+    .card-title { font-size:15px; font-weight:700; color:var(--text); letter-spacing:-.01em; margin-bottom:7px; }
+    .card-desc  { font-size:13px; color:var(--text-2); line-height:1.6; }
+    .card-foot  { display:flex; align-items:center; justify-content:space-between; padding-top:2px; }
+    .card-cta   { font-size:12px; font-weight:600; color:var(--text-3); display:flex; align-items:center; gap:5px; transition:color .2s,gap .2s; }
+    .card:hover .card-cta { color:var(--red-l); gap:9px; }
+    .cta-arrow  { font-size:13px; transition:transform .2s; }
+    .card:hover .cta-arrow { transform:translateX(2px); }
+
+    .ic-subs     { background:rgba(124,58,237,.1); }
+    .ic-reviews  { background:rgba(244,114,182,.1); }
+    .ic-policies { background:rgba(34,211,238,.1); }
+    .ic-domain   { background:rgba(20,184,166,.1); }
+    .ic-email    { background:rgba(99,102,241,.1); }
+    .ic-liquid   { background:rgba(52,211,153,.1); }
+    .ic-traffic  { background:rgba(239,68,68,.1); }
+    .ic-tiktok   { background:rgba(254,44,85,.1); }
+    .ic-dl       { background:rgba(14,165,233,.1); }
+    .ic-meta     { background:rgba(59,130,246,.1); }
+    .ic-kw       { background:rgba(251,146,60,.1); }
+    .ic-banana   { background:rgba(234,179,8,.1); }
+    .ic-kling    { background:rgba(139,92,246,.1); }
+
+    /* FOOTER */
+    .footer { border-top:1px solid var(--border); padding:28px 0 36px; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .footer-txt { font-size:12px; color:var(--text-3); }
+    .footer-brand { font-size:12px; font-weight:800; background:linear-gradient(135deg,var(--red-l),var(--red)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .footer-sep { color:var(--text-3); font-size:12px; }
+
+    /* MODALS */
+    .modal { display:none; position:fixed; inset:0; z-index:1000; background:rgba(2,6,23,.85); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px; }
+    .modal.open { display:flex; }
+    .modal-box { background:#0f172a; border:1px solid #334155; border-radius:20px; width:100%; max-width:1200px; max-height:95vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,.6); }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #1e293b; flex-shrink:0; }
+    .modal-header-title { display:flex; align-items:center; gap:10px; font-weight:700; font-size:1rem; }
+    .modal-close { background:#1e293b; border:1px solid #334155; color:#94a3b8; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+    iframe { display:block; width:100%; height:calc(95vh - 65px); border:none; }
+    .email-body { padding:24px; overflow-y:auto; }
+    .email-subject { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#475569; margin-bottom:8px; }
+    .email-subject-value { background:#1e293b; border:1px solid #334155; border-radius:8px; padding:10px 14px; font-size:13px; color:#e2e8f0; margin-bottom:20px; font-weight:600; }
+    .email-content { background:#1e293b; border:1px solid #334155; border-radius:12px; padding:20px; font-size:14px; line-height:1.7; color:#cbd5e1; white-space:pre-wrap; margin-bottom:16px; }
+    .copy-btn { width:100%; background:linear-gradient(135deg,#6366f1,#4f46e5); border:none; color:white; padding:12px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:opacity .15s; }
+    .copy-btn:hover { opacity:.85; }
+    .steps-body { padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:16px; }
+    .step { display:flex; gap:16px; align-items:flex-start; }
+    .step-num { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#14b8a6,#0d9488); color:white; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+    .step-content { flex:1; }
+    .step-title { font-weight:700; font-size:14px; margin-bottom:8px; color:#e2e8f0; }
+    .step-path { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:8px; }
+    .step-path-item { background:#1e293b; border:1px solid #334155; color:#94a3b8; font-size:12px; padding:4px 10px; border-radius:6px; }
+    .step-path-arrow { color:#475569; font-size:11px; }
+    .step-desc { font-size:13px; color:#64748b; line-height:1.6; }
+    .step-code { background:#0f172a; border:1px solid #334155; border-radius:8px; padding:12px 14px; font-family:monospace; font-size:13px; color:#7dd3fc; margin-top:8px; }
+    .step-warning { background:#1c1008; border:1px solid #92400e44; border-radius:8px; padding:10px 14px; font-size:13px; color:#fbbf24; margin-top:8px; line-height:1.5; }
+    .step-divider { height:1px; background:#1e293b; }
+    .keywords-body { padding:24px; overflow-y:auto; }
+    .keywords-note { font-size:13px; color:#64748b; margin-bottom:20px; line-height:1.5; }
+    .keywords-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .kw { background:#1e293b; border:1px solid #334155; color:#fbbf24; font-size:13px; font-weight:600; padding:6px 14px; border-radius:20px; font-family:monospace; letter-spacing:.02em; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Samudrop</h1>
-    <p>Selecciona una herramienta para continuar</p>
-  </div>
+  <!-- NAV -->
+  <nav class="nav">
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-mark">S</div>
+      <span class="nav-logo-text">Samudrop</span>
+    </a>
+    <div class="nav-right">
+      <button class="nav-link" onclick="document.getElementById('sec-tools').scrollIntoView({behavior:'smooth'})">Herramientas</button>
+      <button class="nav-link" onclick="document.getElementById('sec-ia').scrollIntoView({behavior:'smooth'})">IA</button>
+      <span class="nav-pill">13 tools</span>
+    </div>
+  </nav>
 
-  <div class="sections">
+  <div class="page">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-orb"></div>
+      <div class="hero-orb-2"></div>
+      <div class="hero-eyebrow">
+        <div class="eyebrow-dot"></div>
+        Suite de herramientas para dropshipping
+      </div>
+      <h1 class="hero-title">
+        <span class="title-line1">Todo lo que necesitas,</span>
+        <span class="title-line2">en un solo lugar.</span>
+      </h1>
+      <p class="hero-sub">
+        Gestiona suscripciones, genera contenido, descarga vídeos sin marca de agua
+        y optimiza tus creaciones de IA. Gratis, sin registro.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="stat-num">13</span><span class="stat-lbl">Herramientas</span></div>
+        <div class="hero-stat"><span class="stat-num">0€</span><span class="stat-lbl">Coste</span></div>
+        <div class="hero-stat"><span class="stat-num">100%</span><span class="stat-lbl">Sin registro</span></div>
+      </div>
+    </section>
 
     <!-- HERRAMIENTAS -->
-    <div>
-      <div class="section-label"><span>Herramientas</span></div>
+    <section class="section" id="sec-tools">
+      <div class="section-hdr">
+        <div>
+          <div class="section-eyebrow"><div class="eyebrow-bar"></div><span class="eyebrow-tag">Herramientas</span></div>
+          <div class="section-title">Gestión y contenido</div>
+        </div>
+        <span class="section-meta">10 herramientas</span>
+      </div>
       <div class="grid">
 
-        <a href="subscriptions.html" class="card card-subs">
-          <div class="icon">📋</div>
-          <div class="card-body">
-            <div class="card-title">Gestor de Suscripciones</div>
-            <div class="card-desc">Controla tus gastos recurrentes de ecommerce y recibe alertas de vencimiento.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <a href="subscriptions.html" class="card">
+          <div class="card-top"><div class="icon ic-subs">📋</div><span class="card-tag">Gestión</span></div>
+          <div class="card-body"><div class="card-title">Gestor de Suscripciones</div><div class="card-desc">Controla todos tus gastos recurrentes de ecommerce. Alertas de vencimiento para que no se te escape ningún pago.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </a>
 
-        <div class="card card-reviews" onclick="openModal('reviews-modal')">
-          <div class="icon">✍️</div>
-          <div class="card-body">
-            <div class="card-title">Generador de Reviews</div>
-            <div class="card-desc">Genera reseñas de producto optimizadas para tu tienda de dropshipping.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('reviews-modal')">
+          <div class="card-top"><div class="icon ic-reviews">✍️</div><span class="card-tag">Marketing</span></div>
+          <div class="card-body"><div class="card-title">Generador de Reviews</div><div class="card-desc">Genera reseñas de producto optimizadas para tu tienda. Aumenta la confianza y mejora la conversión de tu negocio.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <div class="card card-policies" onclick="openModal('policies-modal')">
-          <div class="icon">📄</div>
-          <div class="card-body">
-            <div class="card-title">Generador de Políticas</div>
-            <div class="card-desc">Crea políticas de tienda personalizadas: devoluciones, privacidad, envíos y más.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('policies-modal')">
+          <div class="card-top"><div class="icon ic-policies">📄</div><span class="card-tag">Legal</span></div>
+          <div class="card-body"><div class="card-title">Generador de Políticas</div><div class="card-desc">Crea políticas de tienda personalizadas: devoluciones, privacidad, envíos y más. Cumple con todos los requisitos legales.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <div class="card card-domain" onclick="openModal('domain-modal')">
-          <div class="icon">🌐</div>
-          <div class="card-body">
-            <div class="card-title">Configuración de Dominio</div>
-            <div class="card-desc">Configura tu dominio de Nominalia correctamente para Shopify.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('domain-modal')">
+          <div class="card-top"><div class="icon ic-domain">🌐</div><span class="card-tag">Shopify</span></div>
+          <div class="card-body"><div class="card-title">Configuración de Dominio</div><div class="card-desc">Guía paso a paso para conectar tu dominio de Nominalia con Shopify. Sin errores ni frustración.</div></div>
+          <div class="card-foot"><span class="card-cta">Ver guía <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <div class="card card-email" onclick="openModal('email-modal')">
-          <div class="icon">✉️</div>
-          <div class="card-body">
-            <div class="card-title">Test Order Email</div>
-            <div class="card-desc">Cancela cualquier test order con esta plantilla de email.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('email-modal')">
+          <div class="card-top"><div class="icon ic-email">✉️</div><span class="card-tag">Shopify</span></div>
+          <div class="card-body"><div class="card-title">Test Order Email</div><div class="card-desc">Plantilla profesional para cancelar pedidos de prueba. Evita chargebacks y resuelve disputas con un solo clic.</div></div>
+          <div class="card-foot"><span class="card-cta">Ver plantilla <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <a href="https://free-kick-f40.notion.site/24f2dc98c054802d98f8fdb5fd1f4a29?v=24f2dc98c0548064b15d000c210e42ee" target="_blank" rel="noopener" class="card card-liquid">
-          <div class="icon">💧</div>
-          <div class="card-body">
-            <div class="card-title">Biblioteca de Liquids</div>
-            <div class="card-desc">Snippets y recursos de Liquid para personalizar tu tienda Shopify.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <a href="https://free-kick-f40.notion.site/24f2dc98c054802d98f8fdb5fd1f4a29?v=24f2dc98c0548064b15d000c210e42ee" target="_blank" rel="noopener" class="card">
+          <div class="card-top"><div class="icon ic-liquid">💧</div><span class="card-tag">Shopify</span></div>
+          <div class="card-body"><div class="card-title">Biblioteca de Liquids</div><div class="card-desc">Colección de snippets y recursos de Liquid para personalizar tu tienda. Diseño profesional sin código complejo.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir biblioteca <span class="cta-arrow">→</span></span></div>
         </a>
 
-        <div class="card card-traffic" onclick="openModal('traffic-modal')">
-          <div class="icon">🎯</div>
-          <div class="card-body">
-            <div class="card-title">Redirección de Tráfico Orgánico</div>
-            <div class="card-desc">Tips para dirigir el tráfico orgánico al país correcto y evitar India, Rusia y otros.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('traffic-modal')">
+          <div class="card-top"><div class="icon ic-traffic">🎯</div><span class="card-tag">TikTok</span></div>
+          <div class="card-body"><div class="card-title">Redirección de Tráfico</div><div class="card-desc">Estrategias para dirigir el tráfico orgánico de TikTok al país que te interesa. Deja de atraer mercados no rentables.</div></div>
+          <div class="card-foot"><span class="card-cta">Ver estrategias <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <div class="card card-tiktok" onclick="openModal('tiktok-comment-modal')">
-          <div class="icon">🎵</div>
-          <div class="card-body">
-            <div class="card-title">Generador de Comentario TikTok</div>
-            <div class="card-desc">Crea capturas de comentarios de TikTok personalizados con nombre, avatar y texto.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('tiktok-comment-modal')">
+          <div class="card-top"><div class="icon ic-tiktok">🎵</div><span class="card-tag">TikTok</span></div>
+          <div class="card-body"><div class="card-title">Generador de Comentario TikTok</div><div class="card-desc">Crea capturas de comentarios con nombre, avatar y texto personalizados. Perfectas para usar en tus vídeos de producto.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <div class="card card-downloader" onclick="openModal('downloader-modal')">
-          <div class="icon">⬇️</div>
-          <div class="card-body">
-            <div class="card-title">Descargador de Vídeos</div>
-            <div class="card-desc">Descarga vídeos de TikTok e Instagram a máxima calidad y sin marca de agua.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('downloader-modal')">
+          <div class="card-top"><div class="icon ic-dl">⬇️</div><span class="card-tag">Contenido</span></div>
+          <div class="card-body"><div class="card-title">Descargador de Vídeos</div><div class="card-desc">Descarga vídeos de TikTok e Instagram a máxima calidad, sin marca de agua y sin límites. Rápido y directo.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <div class="card card-meta" onclick="openModal('meta-modal')">
-          <div class="icon">🧹</div>
-          <div class="card-body">
-            <div class="card-title">Borrador de Metadata</div>
-            <div class="card-desc">Limpia tus archivos para evitar el shadowban de TikTok.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('meta-modal')">
+          <div class="card-top"><div class="icon ic-meta">🧹</div><span class="card-tag">TikTok</span></div>
+          <div class="card-body"><div class="card-title">Borrador de Metadata</div><div class="card-desc">Elimina toda la metadata de tus vídeos para evitar el shadowban de TikTok. Compatible con MP4, MOV y más formatos.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </div>
 
       </div>
-    </div>
+    </section>
+
+    <div class="section-divider"></div>
 
     <!-- IA -->
-    <div>
-      <div class="section-label"><span>IA</span></div>
+    <section class="section" id="sec-ia">
+      <div class="section-hdr">
+        <div>
+          <div class="section-eyebrow"><div class="eyebrow-bar"></div><span class="eyebrow-tag">Inteligencia Artificial</span></div>
+          <div class="section-title">Crea con IA</div>
+        </div>
+        <span class="section-meta">3 herramientas</span>
+      </div>
       <div class="grid">
 
-        <div class="card card-keywords" onclick="openModal('keywords-modal')">
-          <div class="icon">🚫</div>
-          <div class="card-body">
-            <div class="card-title">Restringir palabras clave</div>
-            <div class="card-desc">Lista de palabras prohibidas para vídeos de IA en TikTok.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('keywords-modal')">
+          <div class="card-top"><div class="icon ic-kw">🚫</div><span class="card-tag">TikTok</span></div>
+          <div class="card-body"><div class="card-title">Palabras Clave Restringidas</div><div class="card-desc">Lista actualizada de palabras prohibidas en vídeos de IA en TikTok. Evita el shadowban y maximiza tu alcance orgánico.</div></div>
+          <div class="card-foot"><span class="card-cta">Ver lista <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <div class="card card-banana" onclick="openModal('banana-modal')">
-          <div class="icon">🍌</div>
-          <div class="card-body">
-            <div class="card-title">Generador de Prompts Nano Banana</div>
-            <div class="card-desc">Crea prompts optimizados para generar vídeos con Nano Banana AI.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('banana-modal')">
+          <div class="card-top"><div class="icon ic-banana">🍌</div><span class="card-tag">Prompts</span></div>
+          <div class="card-body"><div class="card-title">Prompts para Nano Banana</div><div class="card-desc">Genera prompts optimizados para crear vídeos virales con Nano Banana AI. Resultados de calidad profesional en segundos.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </div>
 
-        <div class="card card-kling" onclick="openModal('kling-modal')">
-          <div class="icon">🎬</div>
-          <div class="card-body">
-            <div class="card-title">Generador de Prompts Kling 3.0</div>
-            <div class="card-desc">Crea prompts optimizados para generar vídeos con Kling 3.0 AI.</div>
-          </div>
-          <div class="card-arrow">→</div>
+        <div class="card" onclick="openModal('kling-modal')">
+          <div class="card-top"><div class="icon ic-kling">🎬</div><span class="card-tag">Prompts</span></div>
+          <div class="card-body"><div class="card-title">Prompts para Kling 3.0</div><div class="card-desc">Crea prompts detallados para generar vídeos con Kling 3.0. Lleva la calidad de tu contenido de IA al siguiente nivel.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </div>
 
       </div>
-    </div>
+    </section>
 
-  </div>
+    <!-- FOOTER -->
+    <footer class="footer">
+      <span class="footer-txt">Creado por</span>
+      <span class="footer-brand">Samu</span>
+      <span class="footer-sep">&middot;</span>
+      <span class="footer-txt">Samudrop 2025</span>
+    </footer>
 
-  <!-- POPUP REVIEWS -->
-  <div id="reviews-modal" class="modal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div class="modal-header-title"><span style="font-size:1.3rem">✍️</span> Generador de Reviews</div>
-        <button class="modal-close" onclick="closeModal('reviews-modal')">✕</button>
-      </div>
-      <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed"
-              title="Review Generator — Dropshipping Pipeline"
-              allow="clipboard-write" allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <!-- POPUP CONFIGURACIÓN DOMINIO -->
-  <div id="domain-modal" class="modal">
-    <div class="modal-box" style="max-width:620px">
-      <div class="modal-header">
-        <div class="modal-header-title"><span style="font-size:1.3rem">🌐</span> Configuración de Dominio — Nominalia</div>
-        <button class="modal-close" onclick="closeModal('domain-modal')">✕</button>
-      </div>
-      <div class="steps-body">
-
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <div class="step-title">Acceder a la configuración DNS</div>
-            <div class="step-path">
-              <span class="step-path-item">Gestionar dominio</span>
-              <span class="step-path-arrow">›</span>
-              <span class="step-path-item">Dominio y DNS</span>
-              <span class="step-path-arrow">›</span>
-              <span class="step-path-item">Asociaciones y subdominios</span>
-              <span class="step-path-arrow">›</span>
-              <span class="step-path-item">Configuración DNS</span>
-            </div>
-            <div class="step-desc">Una vez dentro, <strong style="color:#e2e8f0">borrar el registro tipo A</strong> que aparece por defecto.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <div class="step-title">Añadir registro A</div>
-            <div class="step-code">Nombre: (vacío)<br>Dirección IP: 23.227.38.65</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <div class="step-title">Ir a Gestión Avanzada</div>
-            <div class="step-warning">⚠️ <strong>IMPORTANTE:</strong> Borrar el registro <code style="background:#2d1a00;padding:1px 5px;border-radius:4px">www.(DOMINIO).</code> de tipo CNAME. Es el único <code style="background:#2d1a00;padding:1px 5px;border-radius:4px">www</code> que hay — está entre <code style="background:#2d1a00;padding:1px 5px;border-radius:4px">pop.(DOMINIO).</code> y <code style="background:#2d1a00;padding:1px 5px;border-radius:4px">(DOMINIO).</code></div>
-            <div class="step-desc" style="margin-top:10px">Una vez borrado, añadir un nuevo registro CNAME:</div>
-            <div class="step-code">www &nbsp; 900 &nbsp; CNAME &nbsp; shops.myshopify.com</div>
-            <div class="step-desc" style="margin-top:10px">Pulsar <strong style="color:#e2e8f0">Aplicar</strong> y esperar unos minutos.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <div class="step-title">Conectar en Shopify</div>
-            <div class="step-desc">Ir a Shopify → <strong style="color:#e2e8f0">Conectar dominio existente</strong> e introducir el dominio. Listo.</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- POPUP TEST ORDER EMAIL -->
-  <div id="email-modal" class="modal">
-    <div class="modal-box" style="max-width:600px">
-      <div class="modal-header">
-        <div class="modal-header-title"><span style="font-size:1.3rem">✉️</span> Test Order Email</div>
-        <button class="modal-close" onclick="closeModal('email-modal')">✕</button>
-      </div>
-      <div class="email-body">
-        <div class="email-subject">Subject</div>
-        <div class="email-subject-value">Refund Request - Order #1006 — Immediate Action Required</div>
-        <div class="email-content" id="email-text">Hello,
-
-I'm writing regarding Order #XXXX. I purchased a digital product that I have not downloaded, accessed, or used in any way. No delivery has taken place.
-
-I am requesting an immediate cancellation and full refund.
-
-I want to be straightforward: if this refund is not processed promptly, I will have no choice but to initiate a chargeback through my bank. I would prefer to resolve this directly with you, but I will not hesitate to escalate if necessary.
-
-Please confirm the cancellation and refund at your earliest convenience.
-
-Thank you.</div>
-        <button class="copy-btn" onclick="copyEmail()">Copiar mensaje</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- POPUP REDIRECCIÓN DE TRÁFICO ORGÁNICO -->
-  <div id="traffic-modal" class="modal">
-    <div class="modal-box" style="max-width:660px">
-      <div class="modal-header">
-        <div class="modal-header-title"><span style="font-size:1.3rem">🎯</span> Redirección de Tráfico Orgánico</div>
-        <button class="modal-close" onclick="closeModal('traffic-modal')">✕</button>
-      </div>
-      <div class="steps-body">
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">1</div>
-          <div class="step-content">
-            <div class="step-title">IP dedicada</div>
-            <div class="step-desc">Si no tienes IP dedicada, cómprala. Es la base para que la VPN funcione correctamente y la cuenta apunte al país que quieres.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">2</div>
-          <div class="step-content">
-            <div class="step-title">Calentar la cuenta en el país objetivo</div>
-            <div class="step-desc">Volver a "calentar" la cuenta con contenido en inglés (o del país target): dar like, comentar y seguir cuentas <strong style="color:#e2e8f0">del país al que quieres dirigir el tráfico</strong>, igual que se hace para calentar una cuenta de producto.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">3</div>
-          <div class="step-content">
-            <div class="step-title">Verificar los "Sonidos" de la cuenta</div>
-            <div class="step-desc">Ve a <strong style="color:#e2e8f0">Sonidos</strong> dentro de la app y comprueba que aparece el <strong style="color:#e2e8f0">TOP 50 sonidos del país</strong> donde tienes la VPN. Si no aparece ese ranking, la cuenta está comprometida y no va a funcionar bien.</div>
-            <div class="step-warning">⚠️ Si el TOP 50 no muestra el país correcto, la cuenta está "jodida" — necesita más calentamiento o es irrecuperable.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">4</div>
-          <div class="step-content">
-            <div class="step-title">Usa música del país objetivo</div>
-            <div class="step-desc">Evita sonidos en otros idiomas, edits de música de anime, audios de memes o canciones graciosas. Usa <strong style="color:#e2e8f0">música del país al que quieres llegar</strong>: si es España, canciones en español; si es EEUU, música en inglés.</div>
-            <div class="step-desc" style="margin-top:8px">Para verificar un audio: pulsa sobre él y mira qué vídeos aparecen primero. Si son de fuera del target, <strong style="color:#f87171">no lo uses</strong>.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">5</div>
-          <div class="step-content">
-            <div class="step-title">Texto a Voz nativo de la red social</div>
-            <div class="step-desc">Usa el <strong style="color:#e2e8f0">Texto a Voz de la propia plataforma</strong> (TikTok, Instagram…) siempre que sea posible. Si el contenido no tiene texto, la IA también funciona.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">6</div>
-          <div class="step-content">
-            <div class="step-title">Para target 100% EEUU: géneros concretos</div>
-            <div class="step-desc">Si apuntas al mercado americano, prioriza estos géneros:</div>
-            <div class="step-path" style="margin-top:8px">
-              <span class="step-path-item">🤠 Country</span>
-              <span class="step-path-item">🎤 Rap</span>
-              <span class="step-path-item">🎵 Pop</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">7</div>
-          <div class="step-content">
-            <div class="step-title">El nicho afecta a la segmentación</div>
-            <div class="step-desc">El nicho del producto influye en el tráfico recibido aunque es difícil de controlar. Por ejemplo, si la ropa es muy viral en India, el algoritmo puede mostrarlo allí por "segmentación de nicho". Tenlo en cuenta al elegir qué productos promocionar.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">8</div>
-          <div class="step-content">
-            <div class="step-title">Quitar restricción de edad en Instagram</div>
-            <div class="step-desc">Cambia la cuenta de Instagram a <strong style="color:#e2e8f0">cuenta de empresa</strong>. Esto elimina automáticamente la restricción de edad que limita el alcance de los vídeos.</div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">9</div>
-          <div class="step-content">
-            <div class="step-title">Palabras clave del país objetivo (ocultas)</div>
-            <div class="step-desc">Añade palabras clave del país objetivo en el vídeo o descripción y <strong style="color:#e2e8f0">escóndelas</strong> para que el algoritmo las lea sin que el usuario las vea. Métodos:</div>
-            <div class="step-code">
-              1. Texto mismo color que el fondo<br>
-              2. Tamaño de fuente mínimo (1–2px)<br>
-              3. Texto detrás de un elemento/imagen
-            </div>
-          </div>
-        </div>
-
-        <div class="step-divider"></div>
-
-        <div class="step">
-          <div class="step-num" style="background:linear-gradient(135deg,#ef4444,#dc2626)">10</div>
-          <div class="step-content">
-            <div class="step-title">Publicar en horario nocturno de los países no deseados</div>
-            <div class="step-desc">El primer tráfico que recibe un vídeo define gran parte de su distribución. Publica cuando los países que <strong style="color:#f87171">no</strong> quieres estén dormidos.</div>
-            <div class="step-code">Ejemplo: 9 AM España = 3 AM Latam<br>→ El primer tráfico será español</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- POPUP DESCARGADOR DE VÍDEOS -->
-  <div id="downloader-modal" class="modal">
-    <div class="modal-box" style="max-width:600px">
-      <div class="modal-header">
-        <div class="modal-header-title"><span style="font-size:1.3rem">⬇️</span> Descargador de Vídeos</div>
-        <button class="modal-close" onclick="closeModal('downloader-modal')">✕</button>
-      </div>
-      <iframe id="downloader-frame" title="Descargador de Vídeos" allow="clipboard-write" allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <!-- POPUP GENERADOR COMENTARIO TIKTOK -->
-  <div id="tiktok-comment-modal" class="modal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div class="modal-header-title"><span style="font-size:1.3rem">🎵</span> Generador de Comentario TikTok</div>
-        <button class="modal-close" onclick="closeModal('tiktok-comment-modal')">✕</button>
-      </div>
-      <iframe id="tiktok-comment-frame" title="Generador de Comentario TikTok" allow="clipboard-write" allowfullscreen></iframe>
-    </div>
   </div>
 
   <!-- POPUP BORRADOR DE METADATA -->
@@ -1596,6 +1176,31 @@ function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');v
         });
         document.body.style.overflow = '';
       }
+    });
+
+    // Mouse-follow spotlight effect
+    document.querySelectorAll('.card').forEach(function(card) {
+      card.addEventListener('mousemove', function(e) {
+        var r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    });
+
+    // Scroll-triggered card entrance animations
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var d = parseInt(entry.target.dataset.delay) || 0;
+          setTimeout(function() { entry.target.classList.add('in'); }, d);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.07 });
+
+    document.querySelectorAll('.card').forEach(function(card, i) {
+      card.dataset.delay = (i % 3) * 90;
+      io.observe(card);
     });
   </script>
 
