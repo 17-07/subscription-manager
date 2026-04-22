@@ -1566,6 +1566,7 @@ function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');v
 
     var tiktokFrameLoaded = false;
     var downloaderFrameLoaded = false;
+    var metaFrameLoaded = false;
     function openModal(id) {
       document.getElementById(id).classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -1576,6 +1577,10 @@ function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');v
       if (id === 'downloader-modal' && !downloaderFrameLoaded) {
         downloaderFrameLoaded = true;
         document.getElementById('downloader-frame').srcdoc = DOWNLOADER_HTML;
+      }
+      if (id === 'meta-modal' && !metaFrameLoaded) {
+        metaFrameLoaded = true;
+        document.getElementById('meta-frame').srcdoc = METADATA_HTML;
       }
     }
 
