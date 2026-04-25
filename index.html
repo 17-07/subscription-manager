@@ -184,6 +184,7 @@
     .ic-tiktok   { background:rgba(254,44,85,.1); }
     .ic-dl       { background:rgba(14,165,233,.1); }
     .ic-meta     { background:rgba(59,130,246,.1); }
+    .ic-igchat   { background:rgba(228,64,95,.1); }
     .ic-kw       { background:rgba(251,146,60,.1); }
     .ic-banana   { background:rgba(234,179,8,.1); }
     .ic-kling    { background:rgba(139,92,246,.1); }
@@ -237,7 +238,7 @@
     <div class="nav-right">
       <button class="nav-link" onclick="document.getElementById('sec-tools').scrollIntoView({behavior:'smooth'})">Herramientas</button>
       <button class="nav-link" onclick="document.getElementById('sec-ia').scrollIntoView({behavior:'smooth'})">IA</button>
-      <span class="nav-pill">13 tools</span>
+      <span class="nav-pill">14 tools</span>
     </div>
   </nav>
 
@@ -260,7 +261,7 @@
         y optimiza tus creaciones de IA. Gratis, sin registro.
       </p>
       <div class="hero-stats">
-        <div class="hero-stat"><span class="stat-num">13</span><span class="stat-lbl">Herramientas</span></div>
+        <div class="hero-stat"><span class="stat-num">14</span><span class="stat-lbl">Herramientas</span></div>
         <div class="hero-stat"><span class="stat-num">0€</span><span class="stat-lbl">Coste</span></div>
         <div class="hero-stat"><span class="stat-num">100%</span><span class="stat-lbl">Sin registro</span></div>
       </div>
@@ -273,7 +274,7 @@
           <div class="section-eyebrow"><div class="eyebrow-bar"></div><span class="eyebrow-tag">Herramientas</span></div>
           <div class="section-title">Gestión y contenido</div>
         </div>
-        <span class="section-meta">11 herramientas</span>
+        <span class="section-meta">12 herramientas</span>
       </div>
       <div class="grid">
 
@@ -343,6 +344,12 @@
           <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
         </div>
 
+        <div class="card" onclick="openModal('igchat-modal')">
+          <div class="card-top"><div class="icon ic-igchat">💬</div><span class="card-tag">Instagram</span></div>
+          <div class="card-body"><div class="card-title">Generador de Fake Chat Instagram</div><div class="card-desc">Crea capturas de conversaciones de Instagram falsas con perfiles, avatares y mensajes personalizados. Descarga como imagen.</div></div>
+          <div class="card-foot"><span class="card-cta">Abrir herramienta <span class="cta-arrow">→</span></span></div>
+        </div>
+
       </div>
     </section>
 
@@ -394,6 +401,17 @@
       <span class="footer-txt">Samudrop 2025</span>
     </footer>
 
+  </div>
+
+  <!-- POPUP FAKE CHAT INSTAGRAM -->
+  <div id="igchat-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-header-title"><span style="font-size:1.3rem">💬</span> Generador de Fake Chat Instagram</div>
+        <button class="modal-close" onclick="closeModal('igchat-modal')">✕</button>
+      </div>
+      <iframe id="igchat-frame" title="Generador de Fake Chat Instagram" allow="clipboard-write" allowfullscreen></iframe>
+    </div>
   </div>
 
   <!-- POPUP BORRADOR DE METADATA -->
@@ -682,6 +700,623 @@ Thank you.</div>
   </div>
 
   <script>
+    var IGCHAT_HTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de Fake Chat \u2014 Zonga Elements</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+  <style>
+    :root {
+      --c-primary: #2563EB;
+      --c-primary-dark: #1E40AF;
+      --c-bg: #0F172A;
+      --c-panel: #1E293B;
+      --c-panel-2: #0B1220;
+      --c-text: #E2E8F0;
+      --c-text-soft: #94A3B8;
+      --c-border: #334155;
+      --c-err: #DC2626;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--c-text);
+      background: var(--c-bg);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+    }
+    .app { display: grid; grid-template-columns: 360px 1fr; min-height: 100vh; }
+    .sidebar {
+      background: var(--c-panel-2);
+      border-right: 1px solid var(--c-border);
+      padding: 20px 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .top-bar { display: flex; justify-content: flex-end; align-items: center; }
+    .brand {
+      font-weight: 800; font-size: 14px;
+      background: linear-gradient(135deg, #60A5FA, #A78BFA);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .section-title {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      font-weight: 700; color: var(--c-text-soft); margin: 0 0 10px;
+    }
+    label { display: block; font-size: 12px; font-weight: 600; color: var(--c-text-soft); margin-bottom: 5px; }
+    .field { margin-bottom: 12px; }
+    input[type="text"], textarea {
+      width: 100%;
+      background: var(--c-panel);
+      border: 1px solid var(--c-border);
+      color: var(--c-text);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: 0;
+      resize: vertical;
+      transition: border-color .15s var(--ease);
+    }
+    input:focus, textarea:focus { border-color: var(--c-primary); }
+    textarea { min-height: 70px; }
+    .tabs {
+      display: flex;
+      background: var(--c-panel);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      gap: 4px;
+    }
+    .tabs button {
+      flex: 1;
+      background: transparent;
+      border: 0;
+      color: var(--c-text-soft);
+      padding: 8px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      background: var(--c-primary);
+      color: white;
+    }
+    .panel-block {
+      background: var(--c-panel);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+    .panel-block .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .panel-block .row:last-child { margin-bottom: 0; }
+    .thumb {
+      width: 42px; height: 42px;
+      border-radius: 8px;
+      background: var(--c-panel-2);
+      border: 1px solid var(--c-border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-text-soft);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .btn {
+      background: #111827;
+      color: white;
+      border: 0;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background .15s var(--ease);
+    }
+    .btn:hover { background: #0B1220; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--c-primary), #60A5FA);
+      padding: 10px 14px;
+    }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-danger { background: var(--c-err); }
+    .btn-danger:hover { background: #B91C1C; }
+    .btn-block { width: 100%; justify-content: center; padding: 12px; }
+    .btn-lg { padding: 13px; font-size: 13px; }
+    .label-inline {
+      font-size: 13px; font-weight: 600; color: var(--c-text);
+      margin-bottom: 6px; display: block;
+    }
+    .sticky-actions {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-top: auto;
+    }
+    .main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: radial-gradient(800px 400px at 50% 20%, rgba(37,99,235,0.12), transparent 60%), var(--c-bg);
+    }
+    .phone {
+      width: 360px;
+      background: #FFFFFF;
+      color: #000;
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);
+      font-family: -apple-system, 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 720px;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 22px 6px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #000;
+    }
+    .status-right { display: flex; align-items: center; gap: 6px; }
+    .status-right .bat {
+      width: 22px; height: 11px; border: 1px solid #000;
+      border-radius: 3px; position: relative;
+    }
+    .status-right .bat::after {
+      content: ""; position: absolute; right: -3px; top: 3px;
+      width: 2px; height: 5px; background: #000; border-radius: 0 2px 2px 0;
+    }
+    .status-right .bat-fill {
+      position: absolute; inset: 1px; width: 70%; background: #000; border-radius: 1px;
+    }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-bottom: 1px solid #EEE;
+    }
+    .chat-header .hdr-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #E6E6E6;
+      display: flex; align-items: center; justify-content: center;
+      color: #8E8E8E; position: relative;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .chat-header .hdr-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .chat-header .hdr-avatar::after {
+      content: ""; position: absolute; right: -1px; bottom: -1px;
+      width: 10px; height: 10px; background: #44D62C;
+      border: 2px solid #FFF; border-radius: 50%;
+    }
+    .chat-header .hdr-name {
+      font-weight: 700; font-size: 15px; color: #000;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .chat-header .hdr-icons {
+      margin-left: auto; display: flex; gap: 14px; color: #000;
+    }
+    .chat-header .hdr-icons svg { width: 22px; height: 22px; }
+    .chat-header .back-icon { width: 20px; height: 20px; color: #000; }
+    .chat-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #FFF;
+      position: relative;
+    }
+    .profile-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0 16px;
+      text-align: center;
+    }
+    .profile-center .avatar-lg {
+      width: 78px; height: 78px; border-radius: 50%;
+      background: #E6E6E6;
+      display: flex; align-items: center; justify-content: center;
+      color: #8E8E8E; overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .profile-center .avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-center .pc-name { font-weight: 700; font-size: 15px; color: #000; }
+    .profile-center .pc-username { font-size: 13px; color: #8E8E8E; }
+    .profile-center .pc-meta { font-size: 12px; color: #8E8E8E; margin-top: 1px; }
+    .profile-center .pc-follow { font-size: 12px; color: #8E8E8E; margin-top: 1px; }
+    .profile-center .view-btn {
+      background: #EFEFEF;
+      border: 0;
+      color: #000;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      margin-top: 10px;
+      cursor: default;
+      font-family: inherit;
+    }
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      max-width: 85%;
+      position: relative;
+    }
+    .msg-row.left { align-self: flex-start; }
+    .msg-row.right { align-self: flex-end; flex-direction: row-reverse; }
+    .msg-avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #E6E6E6;
+      display: flex; align-items: center; justify-content: center;
+      color: #8E8E8E; overflow: hidden; flex-shrink: 0;
+    }
+    .msg-avatar svg { width: 14px; height: 14px; }
+    .msg-row.right .msg-avatar { display: none; }
+    .bubble {
+      padding: 8px 13px;
+      border-radius: 20px;
+      font-size: 14px;
+      line-height: 1.35;
+      max-width: 100%;
+      word-wrap: break-word;
+      cursor: pointer;
+      position: relative;
+    }
+    .bubble.left { background: #EFEFEF; color: #000; }
+    .bubble.right {
+      background: linear-gradient(135deg, #A45FFF, #7B2CFF);
+      color: #FFF;
+    }
+    .bubble.image {
+      padding: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+    .bubble.image img { display: block; max-width: 180px; border-radius: 16px; }
+    .trash {
+      background: #DC2626;
+      border: 0;
+      color: white;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .trash svg { width: 14px; height: 14px; }
+    .msg-row.selected .trash { display: flex; }
+    .chat-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-top: 1px solid #EEE;
+    }
+    .chat-input .cam {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #A45FFF, #7B2CFF);
+      display: flex; align-items: center; justify-content: center;
+      color: white; flex-shrink: 0;
+    }
+    .chat-input .cam svg { width: 18px; height: 18px; }
+    .chat-input .input-pill {
+      flex: 1;
+      background: #EFEFEF;
+      border-radius: 20px;
+      padding: 8px 14px;
+      color: #8E8E8E;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-input .input-pill .placeholder { flex: 1; }
+    .chat-input .input-pill svg { width: 18px; height: 18px; color: #000; }
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { order: 2; border-right: 0; border-top: 1px solid var(--c-border); }
+      .main { order: 1; padding: 20px 12px; }
+      .phone { width: 100%; max-width: 360px; height: 640px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="top-bar">
+        <span class="brand">Fake Chat Generator</span>
+      </div>
+      <div>
+        <p class="section-title">Perfil</p>
+        <div class="field">
+          <label for="pName">Name</label>
+          <input type="text" id="pName" value="Prankshit" />
+        </div>
+        <div class="field">
+          <label for="pUser">Username</label>
+          <input type="text" id="pUser" value="Prankshit" />
+        </div>
+        <div class="field">
+          <label for="pFollow">Follow / Post</label>
+          <input type="text" id="pFollow" value="100 followers \u00B7 5 posts" />
+        </div>
+      </div>
+      <div>
+        <p class="section-title">Personas</p>
+        <div class="tabs" id="tabs">
+          <button type="button" class="active" data-tab="p1">Person 1</button>
+          <button type="button" data-tab="p2">Person 2</button>
+        </div>
+      </div>
+      <div class="panel-block" id="panel-p1">
+        <label class="label-inline">Foto de perfil</label>
+        <div class="row">
+          <div class="thumb" id="p1AvatarThumb">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z"/></svg>
+          </div>
+          <label class="btn" for="p1AvatarInput">Adjuntar imagen</label>
+          <input type="file" id="p1AvatarInput" accept="image/*" hidden />
+        </div>
+        <label class="label-inline" style="margin-top:8px">Enviar foto</label>
+        <div class="row">
+          <div class="thumb" id="p1PhotoThumb">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg>
+          </div>
+          <label class="btn" for="p1PhotoInput">Adjuntar imagen</label>
+          <button type="button" class="btn btn-primary" data-send-photo="p1">Enviar</button>
+          <input type="file" id="p1PhotoInput" accept="image/*" hidden />
+        </div>
+        <label class="label-inline" style="margin-top:10px">Mensaje</label>
+        <textarea id="p1Message" placeholder="Escribe lo que env\u00EDa la persona 1\u2026"></textarea>
+        <button type="button" class="btn btn-primary" style="margin-top:8px" data-send-msg="p1">
+          A\u00F1adir mensaje
+        </button>
+      </div>
+      <div class="panel-block" id="panel-p2" style="display:none">
+        <label class="label-inline">Enviar foto</label>
+        <div class="row">
+          <div class="thumb" id="p2PhotoThumb">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg>
+          </div>
+          <label class="btn" for="p2PhotoInput">Adjuntar imagen</label>
+          <button type="button" class="btn btn-primary" data-send-photo="p2">Enviar</button>
+          <input type="file" id="p2PhotoInput" accept="image/*" hidden />
+        </div>
+        <label class="label-inline" style="margin-top:10px">Mensaje</label>
+        <textarea id="p2Message" placeholder="Escribe lo que env\u00EDas t\u00FA\u2026"></textarea>
+        <button type="button" class="btn btn-primary" style="margin-top:8px" data-send-msg="p2">
+          A\u00F1adir mensaje
+        </button>
+      </div>
+      <div class="sticky-actions">
+        <button type="button" class="btn btn-danger btn-block btn-lg" id="clearBtn">
+          \uD83D\uDDD1 Borrar conversaci\u00F3n
+        </button>
+        <button type="button" class="btn btn-primary btn-block btn-lg" id="downloadBtn">
+          \u2193 Descargar imagen
+        </button>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="phone" id="phone">
+        <div class="status-bar">
+          <span>10:04</span>
+          <span class="status-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4"/><rect x="4" y="5" width="2.5" height="6"/><rect x="8" y="3" width="2.5" height="8"/><rect x="12" y="0" width="2.5" height="11"/></svg>
+            <span style="font-size:13px">4G</span>
+            <span class="bat"><span class="bat-fill"></span></span>
+          </span>
+        </div>
+        <div class="chat-header">
+          <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <div class="hdr-avatar" id="hdrAvatar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z"/></svg>
+          </div>
+          <span class="hdr-name"><span id="hdrName">Prankshit</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+          <span class="hdr-icons">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </span>
+        </div>
+        <div class="chat-body" id="chatBody">
+          <div class="profile-center">
+            <div class="avatar-lg" id="pcAvatar">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z"/></svg>
+            </div>
+            <div class="pc-name" id="pcName">Prankshit</div>
+            <div class="pc-username" id="pcUsername">Prankshit</div>
+            <div class="pc-meta" id="pcFollow">100 followers \u00B7 5 posts</div>
+            <div class="pc-follow">You follow each other on Instagram</div>
+            <button class="view-btn" type="button">View profile</button>
+          </div>
+        </div>
+        <div class="chat-input">
+          <span class="cam">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </span>
+          <div class="input-pill">
+            <span class="placeholder">Message...</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    const state = {
+      name: 'Prankshit',
+      username: 'Prankshit',
+      follow: '100 followers \u00B7 5 posts',
+      avatar: null,
+      p1Photo: null,
+      p2Photo: null,
+      messages: []
+    };
+    $('pName').addEventListener('input', e => { state.name = e.target.value; $('pcName').textContent = state.name; $('hdrName').textContent = state.name; });
+    $('pUser').addEventListener('input', e => { state.username = e.target.value; $('pcUsername').textContent = state.username; });
+    $('pFollow').addEventListener('input', e => { state.follow = e.target.value; $('pcFollow').textContent = state.follow; });
+    document.querySelectorAll('#tabs button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b === btn));
+        const tab = btn.dataset.tab;
+        $('panel-p1').style.display = tab === 'p1' ? '' : 'none';
+        $('panel-p2').style.display = tab === 'p2' ? '' : 'none';
+      });
+    });
+    $('p1AvatarInput').addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        state.avatar = ev.target.result;
+        setImg($('p1AvatarThumb'), state.avatar);
+        setImg($('pcAvatar'), state.avatar);
+        setImg($('hdrAvatar'), state.avatar);
+      };
+      reader.readAsDataURL(file);
+    });
+    $('p1PhotoInput').addEventListener('change', e => stagePhoto(e, 'p1'));
+    $('p2PhotoInput').addEventListener('change', e => stagePhoto(e, 'p2'));
+    function stagePhoto(e, who) {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        state[who + 'Photo'] = ev.target.result;
+        setImg($(who + 'PhotoThumb'), ev.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+    function setImg(container, src) {
+      container.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = src;
+      container.appendChild(img);
+    }
+    document.querySelectorAll('[data-send-msg]').forEach(b => {
+      b.addEventListener('click', () => {
+        const who = b.dataset.sendMsg;
+        const input = $(who + 'Message');
+        const text = input.value.trim();
+        if (!text) return;
+        state.messages.push({ id: Date.now() + Math.random(), side: who === 'p1' ? 'left' : 'right', type: 'text', value: text });
+        input.value = '';
+        renderMessages();
+      });
+    });
+    document.querySelectorAll('[data-send-photo]').forEach(b => {
+      b.addEventListener('click', () => {
+        const who = b.dataset.sendPhoto;
+        const src = state[who + 'Photo'];
+        if (!src) { alert('Adjunta una imagen primero.'); return; }
+        state.messages.push({ id: Date.now() + Math.random(), side: who === 'p1' ? 'left' : 'right', type: 'image', value: src });
+        renderMessages();
+      });
+    });
+    function renderMessages() {
+      const body = $('chatBody');
+      body.querySelectorAll('.msg-row').forEach(n => n.remove());
+      state.messages.forEach(m => {
+        const row = document.createElement('div');
+        row.className = 'msg-row ' + m.side;
+        row.dataset.id = m.id;
+        if (m.side === 'left') {
+          const av = document.createElement('div');
+          av.className = 'msg-avatar';
+          if (state.avatar) {
+            const img = document.createElement('img');
+            img.src = state.avatar;
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+            av.appendChild(img);
+          } else {
+            av.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z"/></svg>';
+          }
+          row.appendChild(av);
+        }
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + m.side + (m.type === 'image' ? ' image' : '');
+        if (m.type === 'text') bubble.textContent = m.value;
+        else { const img = document.createElement('img'); img.src = m.value; bubble.appendChild(img); }
+        row.appendChild(bubble);
+        const trash = document.createElement('button');
+        trash.type = 'button';
+        trash.className = 'trash';
+        trash.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+        trash.addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.messages = state.messages.filter(x => x.id !== m.id);
+          renderMessages();
+        });
+        row.appendChild(trash);
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('.trash')) return;
+          document.querySelectorAll('.msg-row.selected').forEach(r => { if (r !== row) r.classList.remove('selected'); });
+          row.classList.toggle('selected');
+        });
+        body.appendChild(row);
+      });
+      body.scrollTop = body.scrollHeight;
+    }
+    $('clearBtn').addEventListener('click', () => {
+      if (!state.messages.length) return;
+      if (!confirm('\u00BFBorrar toda la conversaci\u00F3n?')) return;
+      state.messages = [];
+      renderMessages();
+    });
+    $('downloadBtn').addEventListener('click', async () => {
+      document.querySelectorAll('.msg-row.selected').forEach(r => r.classList.remove('selected'));
+      try {
+        const canvas = await html2canvas($('phone'), { backgroundColor: '#FFFFFF', scale: 2, useCORS: true });
+        const link = document.createElement('a');
+        link.download = 'fake-chat-' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        alert('No se pudo generar la imagen.');
+        console.error(err);
+      }
+    });
+  <\/script>
+</body>
+</html>`;
+
     var DOWNLOADER_HTML = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1357,6 +1992,7 @@ function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');v
     var tiktokFrameLoaded = false;
     var downloaderFrameLoaded = false;
     var metaFrameLoaded = false;
+    var igchatFrameLoaded = false;
     function openModal(id) {
       document.getElementById(id).classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -1371,6 +2007,10 @@ function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');v
       if (id === 'meta-modal' && !metaFrameLoaded) {
         metaFrameLoaded = true;
         document.getElementById('meta-frame').srcdoc = METADATA_HTML;
+      }
+      if (id === 'igchat-modal' && !igchatFrameLoaded) {
+        igchatFrameLoaded = true;
+        document.getElementById('igchat-frame').srcdoc = IGCHAT_HTML;
       }
     }
 
