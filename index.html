@@ -1743,6 +1743,7 @@ Thank you.</div>
     document.getElementById('random-popover').style.display = 'none';
     await applyRandom(rpSelectedGender, type);
     document.getElementById('btn-reload').style.display = 'flex';
+    document.getElementById('btn-reload-mobile').style.display = 'flex';
   }
   async function rpReload() {
     if (!lastGender || !lastType) return;
