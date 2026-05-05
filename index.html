@@ -1584,20 +1584,39 @@ Thank you.</div>
     <div class="tool-title"><h2>Generador de Reply TikTok</h2></div>
     <div>
       <div class="section-label">Comment Controls</div>
-      <div class="username-row">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <div class="sep-v"></div>
-        <input type="text" id="username-input" value="username" placeholder="Display Name" oninput="update()" />
-        <button class="icon-btn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
-          <input type="file" accept="image/*" onchange="handleAvatar(event)" />
-        </button>
-        <button class="icon-btn" id="verified-btn" onclick="toggleVerified()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
-        </button>
-        <button class="icon-btn" onclick="randomIdentity()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
-        </button>
+      <div class="random-wrap">
+        <div class="username-row">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div class="sep-v"></div>
+          <input type="text" id="username-input" value="username" placeholder="Display Name" oninput="update()" />
+          <button class="icon-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+            <input type="file" accept="image/*" onchange="handleAvatar(event)" />
+          </button>
+          <button class="icon-btn" id="verified-btn" onclick="toggleVerified()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+          </button>
+          <button class="btn-random" onclick="openRandomPopover(event)">Random</button>
+        </div>
+        <div class="rp" id="random-popover" style="display:none" onclick="event.stopPropagation()">
+          <div id="rp-step1">
+            <div class="rp-label">Género</div>
+            <div class="rp-btns">
+              <button class="rp-btn male" onclick="rpGender('male')">♂ Hombre</button>
+              <button class="rp-btn female" onclick="rpGender('female')">♀ Mujer</button>
+            </div>
+          </div>
+          <div id="rp-step2" style="display:none">
+            <button class="rp-back" onclick="rpBack()">← atrás</button>
+            <div class="rp-label">Seleccionar</div>
+            <div class="rp-btns col">
+              <button class="rp-btn" onclick="rpExecute('username')">👤 Username</button>
+              <button class="rp-btn" onclick="rpExecute('photo')">📷 Foto</button>
+              <button class="rp-btn" onclick="rpExecute('todo')">✨ Todo</button>
+            </div>
+          </div>
+          <div id="rp-loading" style="display:none" class="rp-loading">Cargando foto...</div>
+        </div>
       </div>
       <div class="textarea-wrap">
         <textarea id="comment-input" rows="4" placeholder="Write your comment here..." oninput="update()">Write any comment and see what happens \u{1F60A}</textarea>
