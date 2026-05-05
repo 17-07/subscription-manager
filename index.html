@@ -1723,24 +1723,39 @@ Thank you.</div>
     document.getElementById('rp-step1').style.display = 'block';
     rpSelectedGender = null;
   }
+  let lastGender = null, lastType = null;
   async function rpExecute(type) {
-    const names = rpSelectedGender === 'male' ? maleNames : femaleNames;
+    lastGender = rpSelectedGender;
+    lastType = type;
+    document.getElementById('random-popover').style.display = 'none';
+    await applyRandom(rpSelectedGender, type);
+    document.getElementById('btn-reload').style.display = 'flex';
+  }
+  async function rpReload() {
+    if (!lastGender || !lastType) return;
+    rpSelectedGender = lastGender;
+    await applyRandom(lastGender, lastType);
+  }
+  async function applyRandom(gender, type) {
+    const names = gender === 'male' ? maleNames : femaleNames;
     if (type === 'username' || type === 'todo') {
       const n = names[Math.floor(Math.random() * names.length)];
       document.getElementById('username-input').value = n;
       update();
     }
     if (type === 'photo' || type === 'todo') {
-      document.getElementById('rp-step2').style.display = 'none';
-      document.getElementById('rp-loading').style.display = 'block';
+      const reloadBtn = document.getElementById('btn-reload');
+      reloadBtn.style.opacity = '0.4';
+      reloadBtn.style.pointerEvents = 'none';
       try {
-        const res = await fetch('https://randomuser.me/api/?gender=' + rpSelectedGender + '&inc=picture&noinfo&nat=us,gb,au,ca');
+        const res = await fetch('https://randomuser.me/api/?gender=' + gender + '&inc=picture&noinfo&nat=us,gb,au,ca');
         const data = await res.json();
         const url = data.results[0].picture.large;
         document.getElementById('preview-avatar').innerHTML = '<img src="' + url + '" />';
       } catch(err) {}
+      reloadBtn.style.opacity = '';
+      reloadBtn.style.pointerEvents = '';
     }
-    document.getElementById('random-popover').style.display = 'none';
   }
   document.addEventListener('click', function() {
     document.getElementById('random-popover').style.display = 'none';
