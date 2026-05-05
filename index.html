@@ -1758,17 +1758,15 @@ Thank you.</div>
       update();
     }
     if (type === 'photo' || type === 'todo') {
-      const reloadBtn = document.getElementById('btn-reload');
-      reloadBtn.style.opacity = '0.4';
-      reloadBtn.style.pointerEvents = 'none';
+      const reloadBtns = [document.getElementById('btn-reload'), document.getElementById('btn-reload-mobile')];
+      reloadBtns.forEach(b => { b.style.opacity = '0.4'; b.style.pointerEvents = 'none'; });
       try {
         const res = await fetch('https://randomuser.me/api/?gender=' + gender + '&inc=picture&noinfo&nat=us,gb,au,ca');
         const data = await res.json();
         const url = data.results[0].picture.large;
         document.getElementById('preview-avatar').innerHTML = '<img src="' + url + '" />';
       } catch(err) {}
-      reloadBtn.style.opacity = '';
-      reloadBtn.style.pointerEvents = '';
+      reloadBtns.forEach(b => { b.style.opacity = ''; b.style.pointerEvents = ''; });
     }
   }
   document.addEventListener('click', function() {
