@@ -1513,7 +1513,8 @@ Thank you.</div>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0c; min-height: 100vh; display: flex; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0c; min-height: 100vh; display: flex; overflow-x: hidden; }
+  html { overflow-x: hidden; }
   .app { display: grid; grid-template-columns: 380px 1fr; width: 100%; min-height: 100vh; }
   .left-panel { background: #0d0d10; border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; padding: 24px 20px; gap: 20px; overflow-y: auto; }
   .tool-title h2 { font-size: 1.25rem; font-weight: 800; background: linear-gradient(135deg, #fe2c55, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
