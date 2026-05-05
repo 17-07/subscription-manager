@@ -1664,7 +1664,10 @@ Thank you.</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
 <script>
   let verified = false;
-  const names = ['alexmartinez_','sofia_rv','juancarlos22','pablohdz_','lauramv','miguelito_ok','cristinagb','iker_sports'];
+  const maleNames = ['samuel.vibes','justalex_','jake_07','realdanny\uD83D\uDD25','mike.daily','noah\uD83D\uDCF2','chris_urbn','ethan.mov','lucas\u26A1\uFE0F','matt_23x','jayden\uD83D\uDCAD','oliver.vlogs','nathan_esp','cole\uD83D\uDE36\u200D\uD83C\uDF2B\uFE0F','logan_999','tyler\uD83D\uDCF8','aaron_._','dylan\uD83E\uDD77','ryan.vibez','mason_04'];
+  const femaleNames = ['emily.vibes','sophie_07','justlily_','ava.daily','mia\uD83D\uDCAD','olivia_23x','chloe\uD83D\uDCF8','hannah_urbn','zoe\u26A1\uFE0F','ellie.mov','madison\uD83D\uDE36\u200D\uD83C\uDF2B\uFE0F','grace.vlogs','isabella_esp','ruby\u2728','scarlett_999','bella\uD83D\uDCF2','lucy_._','ariana\uD83C\uDFF5\uFE0F','natalie.vibez','layla_04'];
+  let rpSelectedGender = null;
+
   function update() {
     const u = document.getElementById('username-input').value || 'username';
     const c = document.getElementById('comment-input').value || '';
@@ -1694,11 +1697,49 @@ Thank you.</div>
       document.getElementById('preview-username').after(badge);
     }
   }
-  function randomIdentity() {
-    const n = names[Math.floor(Math.random() * names.length)];
-    document.getElementById('username-input').value = n;
-    update();
+  function openRandomPopover(e) {
+    e.stopPropagation();
+    const pop = document.getElementById('random-popover');
+    const isOpen = pop.style.display !== 'none';
+    if (isOpen) { pop.style.display = 'none'; return; }
+    document.getElementById('rp-step1').style.display = 'block';
+    document.getElementById('rp-step2').style.display = 'none';
+    document.getElementById('rp-loading').style.display = 'none';
+    rpSelectedGender = null;
+    pop.style.display = 'block';
   }
+  function rpGender(gender) {
+    rpSelectedGender = gender;
+    document.getElementById('rp-step1').style.display = 'none';
+    document.getElementById('rp-step2').style.display = 'block';
+  }
+  function rpBack() {
+    document.getElementById('rp-step2').style.display = 'none';
+    document.getElementById('rp-step1').style.display = 'block';
+    rpSelectedGender = null;
+  }
+  async function rpExecute(type) {
+    const names = rpSelectedGender === 'male' ? maleNames : femaleNames;
+    if (type === 'username' || type === 'todo') {
+      const n = names[Math.floor(Math.random() * names.length)];
+      document.getElementById('username-input').value = n;
+      update();
+    }
+    if (type === 'photo' || type === 'todo') {
+      document.getElementById('rp-step2').style.display = 'none';
+      document.getElementById('rp-loading').style.display = 'block';
+      try {
+        const res = await fetch('https://randomuser.me/api/?gender=' + rpSelectedGender + '&inc=picture&noinfo&nat=us,gb,au,ca');
+        const data = await res.json();
+        const url = data.results[0].picture.large;
+        document.getElementById('preview-avatar').innerHTML = '<img src="' + url + '" />';
+      } catch(err) {}
+    }
+    document.getElementById('random-popover').style.display = 'none';
+  }
+  document.addEventListener('click', function() {
+    document.getElementById('random-popover').style.display = 'none';
+  });
   async function exportImg() {
     const el = document.getElementById('export-target');
     const canvas = await html2canvas(el, { backgroundColor: '#0a0a0c', scale: 3, useCORS: true, logging: false });
