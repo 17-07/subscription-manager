@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tracker de Productos — Samudrop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body { background: #08080f; color: #e2e8f0; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #1e1e2e; border-radius: 4px; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+    .badge { display:inline-flex; align-items:center; padding:3px 9px; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.04em; }
+    .badge-green { background:rgba(34,197,94,.1); color:#4ade80; border:1px solid rgba(34,197,94,.2); }
+    .badge-red { background:rgba(239,68,68,.1); color:#f87171; border:1px solid rgba(239,68,68,.2); }
+    .badge-amber { background:rgba(251,191,36,.1); color:#fbbf24; border:1px solid rgba(251,191,36,.2); }
+    .badge-purple { background:rgba(167,139,250,.1); color:#a78bfa; border:1px solid rgba(167,139,250,.2); }
+    .card { background:#0f0f1a; border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:20px; }
+    input[type=text], input[type=number], input[type=date], select, textarea {
+      width:100%; padding:10px 14px; border-radius:10px; background:#0f0f1a;
+      border:1px solid rgba(255,255,255,.08); color:#e2e8f0; font-size:13px;
+      font-family:inherit; outline:none; transition:border-color .2s;
+    }
+    input:focus, select:focus, textarea:focus { border-color:#7c3aed; }
+    input::placeholder, textarea::placeholder { color:#3d4555; }
+    textarea { resize:vertical; min-height:80px; line-height:1.5; }
+    select { cursor:pointer; }
+  </style>
+</head>
+<body>
+<div id="app"><div style="display:flex;justify-content:center;align-items:center;height:100vh;font-size:18px;color:#64748b;font-family:Inter,sans-serif">Cargando...</div></div>
+<script>
+const PIN = '2038';
+const SUPABASE_URL = 'https://iofdeuwxlrefjjzdzbun.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvZmRldXd4bHJlZmpqemR6YnVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNzA3MDgsImV4cCI6MjA5MTk0NjcwOH0.UO6aQu9LbfNkbg0HxwYV4byzsxDZPEdBf4OZFSwXOYc';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let products = [], view = 'login', selectedProduct = null, editingId = null;
+let filter = { estado:'todos', proveedor:'todos', search:'' }, sort = 'fecha_desc';
+let pinValue = '', chartInstances = {};
+
+// ── SEED DATA ────────────────────────────────────────
+const SEED_DATA = [
+  { nombre:'WlrdVision', nicho:'Poster/Decoración', fecha_inicio:'2025-05-29', proveedor:'Aliexpress', total_pedidos:24, facturacion_bruta:571, motivo_corte:'Poco volumen', aprendizaje_clave:'Poster nicho, poca escala', estado:'cortado' },
+  { nombre:'Couema Rings', fecha_inicio:'2025-06-21', proveedor:'Aliexpress', total_pedidos:0, facturacion_bruta:0, motivo_corte:'0 ventas', aprendizaje_clave:'Producto difícil de demostrar', estado:'cortado', repetir:'No' },
+  { nombre:'SquidVault', fecha_inicio:'2025-07-09', proveedor:'Aliexpress', total_pedidos:166, facturacion_bruta:3010, motivo_corte:'Temporada', aprendizaje_clave:'Buen producto de tendencia', estado:'cortado' },
+  { nombre:'HarryCup', fecha_inicio:'2025-08-16', proveedor:'Aliexpress', total_pedidos:2, facturacion_bruta:88, motivo_corte:'Poco volumen', aprendizaje_clave:'Nicho pequeño', estado:'cortado' },
+  { nombre:'GlowBrake', fecha_inicio:'2025-09-09', proveedor:'Aliexpress', total_pedidos:5, facturacion_bruta:260, motivo_corte:'Poco volumen', aprendizaje_clave:'Visual, poca conversión', estado:'cortado' },
+  { nombre:'Inventorix', nicho:'Gaming', fecha_inicio:'2025-10-02', proveedor:'Aliexpress', total_pedidos:23, facturacion_bruta:400, motivo_corte:'Temporada', aprendizaje_clave:'Nicho gamer funciona', estado:'cortado' },
+  { nombre:'NoirHood', nicho:'Ropa', fecha_inicio:'2025-10-21', proveedor:'Aliexpress', total_pedidos:1, facturacion_bruta:0, motivo_corte:'1 venta', aprendizaje_clave:'Ropa difícil en orgánico', estado:'cortado', repetir:'No' },
+  { nombre:'fnafVault', fecha_inicio:'2025-10-24', proveedor:'Aliexpress', total_pedidos:10, facturacion_bruta:380, motivo_corte:'Temporada', aprendizaje_clave:'Calendario adviento = pico corto', estado:'cortado' },
+  { nombre:'GrinchHug', nicho:'Navidad', fecha_inicio:'2025-11-06', proveedor:'Aliexpress', total_pedidos:10, facturacion_bruta:380, motivo_corte:'Temporada', aprendizaje_clave:'Peluche navidad, pico corto', estado:'cortado' },
+  { nombre:'LuminaZen', fecha_inicio:'2025-11-11', proveedor:'Aliexpress', total_pedidos:0, facturacion_bruta:0, motivo_corte:'<3 vídeos', aprendizaje_clave:'Poco testeado, sin datos', estado:'cortado', repetir:'No' },
+  { nombre:'StrangerPaw', fecha_inicio:'2025-12-01', proveedor:'Agente Privado', total_pedidos:250, facturacion_bruta:16000, motivo_corte:'Bajó hype serie', aprendizaje_clave:'Mejor producto. Hype serie = temporalidad', estado:'cortado', repetir:'Sí' },
+  { nombre:'AeroPhone', fecha_inicio:'2026-01-19', proveedor:'Aliexpress', total_pedidos:0, facturacion_bruta:0, motivo_corte:'0 ventas', aprendizaje_clave:'Mini móvil, poco valor percibido', estado:'cortado', repetir:'No' },
+  { nombre:'Tasbee', fecha_inicio:'2026-01-29', proveedor:'Aliexpress', total_pedidos:0, facturacion_bruta:0, motivo_corte:'<3 vídeos', aprendizaje_clave:'Poco testeado', estado:'cortado', repetir:'No' },
+  {
+    nombre:'FlapiCat', nicho:'Mascotas', fecha_inicio:'2026-01-29', fecha_fin:'2026-03-01',
+    proveedor:'Aliexpress', precio_venta:14.95, coste:6.5,
+    total_pedidos:191, facturacion_bruta:3683.93, beneficio_neto:1700,
+    tiktok_views:1250000, tiktok_facturacion:300,
+    instagram_views:11250000, instagram_facturacion:2000,
+    youtube_views:5150000, youtube_facturacion:460,
+    facebook_views:7000000, facebook_facturacion:919.66,
+    sesiones_web:14580, tasa_conversion:0.91, devoluciones:13,
+    dia_max_facturacion:'299,76€ (13 feb)',
+    video_mejor:'Replicado todo el rato, enseñar el producto y luego stitch clip de gatos jugando con el mismo audio',
+    enfoque_no_funciono:'Enfoque de historia, cualquier otro tipo de contenido que no sea el replicado',
+    cambios_contenido:'Un poco mas de testeo en otros enfoques',
+    facil_grabar:'Sí, bastante',
+    motivo_corte:'No convertía mucho',
+    que_funciono:'El mismo enfoque de contenido una y otra vez',
+    que_replicarias:'Si funciona, no lo toques',
+    producto_o_contenido:'Las dos cosas, el contenido lo podría haber mejorado haciendo split test, pero el tráfico tampoco ayudó al irse mucho a países de latam.',
+    aprendizaje_clave:'La importancia de tener unas buenas destacadas, una buena atención al cliente y el replicar el mismo concepto que funciona una y otra vez',
+    estado:'cortado', repetir:'Sí', nota:8
+  },
+  { nombre:'KaabaBricks', fecha_inicio:'2026-01-30', proveedor:'Aliexpress', total_pedidos:0, facturacion_bruta:0, motivo_corte:'0 ventas', aprendizaje_clave:'Nicho muy específico', estado:'cortado', repetir:'No' },
+  { nombre:'CrystalBelle', fecha_inicio:'2026-02-05', proveedor:'Aliexpress', total_pedidos:0, facturacion_bruta:0, motivo_corte:'0 ventas', aprendizaje_clave:'Relojes princesas, poco diferenciado', estado:'cortado', repetir:'No' },
+  {
+    nombre:'StitchNest', nicho:'Crochet', fecha_inicio:'2026-03-15', fecha_fin:'2026-04-02',
+    proveedor:'Aliexpress', precio_venta:60, coste:42,
+    total_pedidos:15, facturacion_bruta:908, beneficio_neto:272,
+    tiktok_views:15000, tiktok_facturacion:0,
+    instagram_views:1290600, instagram_facturacion:767.78,
+    youtube_views:2700000, youtube_facturacion:141.01,
+    facebook_views:7000, facebook_facturacion:0,
+    sesiones_web:2170, tasa_conversion:0.55, devoluciones:1,
+    dia_max_facturacion:'150,57$',
+    video_mejor:'Tirando a la cama las partes mientras se va montando y luego stitch mio propio de yo cosiendo cómodo en el sofá',
+    enfoque_no_funciono:'Tirarlo para embarazadas y para leer, no conseguía viralizar con esos enfoques sin embargo con el enfoque del Crochet viralizaba muy fácil',
+    cambios_contenido:'Algún tipo de gancho distinto',
+    facil_grabar:'Sí porque reutilizaba bastantes clips y se me enseñaban bien',
+    motivo_corte:'Tráfico extremo a India, poco € por millón',
+    que_funciono:'Funcionó muy bien el clip del final como stitch',
+    que_replicarias:'Buscar distintos enfoques',
+    producto_o_contenido:'El producto, ya que viralizaba bastante pero no convertía muy bien. Además del tráfico a India.',
+    aprendizaje_clave:'Grabar mis propios clips difíciles y usarlos como propios Stitches, para poder reutilizar más el contenido, además de implementar técnicas de redirección de tráfico',
+    estado:'cortado', repetir:'Sí', nota:7
+  },
+  { nombre:'Gearium', fecha_inicio:'2026-03-15', proveedor:'Aliexpress', total_pedidos:1, facturacion_bruta:35, motivo_corte:'Test IA', aprendizaje_clave:'Test con IA, 1 pedido', estado:'cortado' },
+];
+
+// ── HELPERS ──────────────────────────────────────────
+const fmt = (n, d=0) => n == null || n === '' ? '—' : Number(n).toLocaleString('es-ES', { minimumFractionDigits:d, maximumFractionDigits:d });
+const fmtDate = d => { if (!d) return '—'; const dt = new Date(d + 'T00:00:00'); return dt.toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }); };
+const daysBetween = (a, b) => { if (!a) return null; return Math.round((new Date(b || Date.now()) - new Date(a)) / 86400000); };
+const totalViews = p => (p.tiktok_views||0)+(p.instagram_views||0)+(p.youtube_views||0)+(p.facebook_views||0);
+const totalFactRedes = p => (p.tiktok_facturacion||0)+(p.instagram_facturacion||0)+(p.youtube_facturacion||0)+(p.facebook_facturacion||0);
+const calcEurMill = p => { const v=totalViews(p),r=totalFactRedes(p); return (v>0&&r>0) ? r/(v/1e6) : null; };
+const notaColor = n => !n ? '#64748b' : n>=8 ? '#4ade80' : n>=6 ? '#fbbf24' : '#f87171';
+const estadoBadge = e => e==='activo' ? '<span class="badge badge-green">ACTIVO</span>' : e==='cortado' ? '<span class="badge badge-red">CORTADO</span>' : '<span class="badge badge-purple">—</span>';
+const esc = s => String(s||'').replace(/'/g,"&#39;").replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// ── PIN ──────────────────────────────────────────────
+function renderLogin() {
+  document.getElementById('app').innerHTML = `
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#08080f">
+    <div style="background:#0f0f1a;border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:44px 40px;width:100%;max-width:380px;text-align:center">
+      <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#7c3aed,#a21caf);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px">📊</div>
+      <h2 style="margin:0 0 4px;font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Tracker de Productos</h2>
+      <p style="color:#64748b;font-size:13px;margin:0 0 28px">Introduce tu PIN para continuar</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px" id="pin-dots">
+        ${[0,1,2,3].map(i=>`<div id="dot-${i}" style="width:14px;height:14px;border-radius:50%;border:2px solid #334155;background:transparent;transition:all .2s"></div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+        ${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="pinPress('${n}')" style="background:#161625;border:1px solid rgba(255,255,255,.07);color:#e2e8f0;font-size:1.3rem;font-weight:600;padding:18px;border-radius:12px;cursor:pointer;font-family:inherit">${n}</button>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <button onclick="pinClear()" style="background:#161625;border:1px solid rgba(255,255,255,.07);color:#94a3b8;font-size:1rem;padding:18px;border-radius:12px;cursor:pointer;font-family:inherit">⌫</button>
+        <button onclick="pinPress('0')" style="background:#161625;border:1px solid rgba(255,255,255,.07);color:#e2e8f0;font-size:1.3rem;font-weight:600;padding:18px;border-radius:12px;cursor:pointer;font-family:inherit">0</button>
+        <button onclick="pinSubmit()" style="background:linear-gradient(135deg,#7c3aed,#a21caf);border:none;color:#fff;font-size:1rem;padding:18px;border-radius:12px;cursor:pointer;font-family:inherit">✓</button>
+      </div>
+      <div id="pin-error" style="color:#f87171;font-size:13px;margin-top:16px;min-height:20px"></div>
+      <a href="index.html" style="display:inline-block;margin-top:12px;color:#334155;font-size:12px;text-decoration:none">← Volver al inicio</a>
+    </div>
+  </div>`;
+}
+
+function updateDots() {
+  [0,1,2,3].forEach(i => {
+    const d = document.getElementById(`dot-${i}`);
+    if (!d) return;
+    d.style.background = i < pinValue.length ? 'linear-gradient(135deg,#a78bfa,#f472b6)' : 'transparent';
+    d.style.border = i < pinValue.length ? 'none' : '2px solid #334155';
+  });
+}
+function pinPress(n) { if (pinValue.length >= 4) return; pinValue += n; updateDots(); if (pinValue.length === 4) setTimeout(pinSubmit, 180); }
+function pinClear() { pinValue = pinValue.slice(0,-1); updateDots(); }
+function pinSubmit() {
+  if (pinValue === PIN) {
+    sessionStorage.setItem('tracker_auth','1');
+    view = 'dashboard';
+    init();
+  } else {
+    const el = document.getElementById('pin-error');
+    if (el) el.textContent = 'PIN incorrecto';
+    pinValue = ''; updateDots();
+    setTimeout(() => { const e = document.getElementById('pin-error'); if (e) e.textContent = ''; }, 1500);
+  }
+}
+
+// ── DATA ─────────────────────────────────────────────
+async function init() {
+  const { data } = await db.from('tracker_products').select('*').order('fecha_inicio', { ascending: false });
+  products = data || [];
+  render();
+}
+
+async function saveProduct(formData) {
+  let error;
+  if (editingId) {
+    ({ error } = await db.from('tracker_products').update(formData).eq('id', editingId));
+  } else {
+    ({ error } = await db.from('tracker_products').insert([formData]));
+  }
+  if (error) { alert('Error al guardar: ' + error.message); return; }
+  editingId = null; selectedProduct = null;
+  if (view === 'form') view = 'products';
+  await init();
+}
+
+async function deleteProduct(id) {
+  if (!confirm('¿Eliminar este producto? Esta acción no se puede deshacer.')) return;
+  const { error } = await db.from('tracker_products').delete().eq('id', id);
+  if (error) { alert('Error: ' + error.message); return; }
+  selectedProduct = null; view = 'products';
+  await init();
+}
+
+async function seedHistorical() {
+  if (!confirm(`¿Importar ${SEED_DATA.length} productos históricos del CSV? Se añadirán a los existentes.`)) return;
+  const { error } = await db.from('tracker_products').insert(SEED_DATA);
+  if (error) { alert('Error al importar: ' + error.message); return; }
+  alert('¡Histórico importado correctamente!');
+  await init();
+}
+
+// ── FILTER ───────────────────────────────────────────
+function getFiltered() {
+  let res = [...products];
+  if (filter.estado !== 'todos') res = res.filter(p => p.estado === filter.estado);
+  if (filter.proveedor !== 'todos') res = res.filter(p => p.proveedor === filter.proveedor);
+  if (filter.search) { const q = filter.search.toLowerCase(); res = res.filter(p => p.nombre.toLowerCase().includes(q) || (p.nicho||'').toLowerCase().includes(q) || (p.motivo_corte||'').toLowerCase().includes(q)); }
+  if (sort === 'fecha_desc') res.sort((a,b)=>new Date(b.fecha_inicio||0)-new Date(a.fecha_inicio||0));
+  else if (sort === 'fecha_asc') res.sort((a,b)=>new Date(a.fecha_inicio||0)-new Date(b.fecha_inicio||0));
+  else if (sort === 'facturacion_desc') res.sort((a,b)=>(b.facturacion_bruta||0)-(a.facturacion_bruta||0));
+  else if (sort === 'pedidos_desc') res.sort((a,b)=>(b.total_pedidos||0)-(a.total_pedidos||0));
+  else if (sort === 'nota_desc') res.sort((a,b)=>(b.nota||0)-(a.nota||0));
+  return res;
+}
+
+// ── RENDER SHELL ─────────────────────────────────────
+function render() {
+  if (view === 'login') { renderLogin(); return; }
+  const app = document.getElementById('app');
+  app.innerHTML = `
+  <div style="min-height:100vh;background:#08080f">
+    <div style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,15,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.05);height:60px;display:flex;align-items:center;padding:0 28px;gap:20px">
+      <a href="index.html" style="color:#64748b;text-decoration:none;font-size:13px;font-weight:500">← Inicio</a>
+      <div style="width:1px;height:20px;background:rgba(255,255,255,.06)"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a21caf);display:flex;align-items:center;justify-content:center;font-size:13px">📊</div>
+        <span style="font-size:15px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Tracker de Productos</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:4px">
+        <button onclick="setView('dashboard')" style="padding:6px 14px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;${view==='dashboard'?'background:rgba(124,58,237,.15);color:#a78bfa':'background:transparent;color:#64748b'}">📈 Dashboard</button>
+        <button onclick="setView('products')" style="padding:6px 14px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;${view==='products'||view==='detail'?'background:rgba(124,58,237,.15);color:#a78bfa':'background:transparent;color:#64748b'}">📦 Productos</button>
+      </div>
+      <button onclick="editingId=null;selectedProduct=null;setView('form')" style="padding:7px 16px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a21caf);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">+ Añadir</button>
+    </div>
+    <div style="padding-top:60px" id="main-content"></div>
+  </div>`;
+  renderContent();
+}
+
+function setView(v) {
+  Object.values(chartInstances).forEach(c => { try { c.destroy(); } catch(e){} });
+  chartInstances = {};
+  view = v;
+  render();
+}
+
+function renderContent() {
+  const el = document.getElementById('main-content');
+  if (!el) return;
+  if (view === 'dashboard') { el.innerHTML = renderDashboard(); setTimeout(initCharts, 60); }
+  else if (view === 'products') { el.innerHTML = renderProducts(); }
+  else if (view === 'detail') { el.innerHTML = renderDetail(); }
+  else if (view === 'form') { el.innerHTML = renderForm(); }
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
+function renderDashboard() {
+  const total = products.length;
+  const factTotal = products.reduce((s,p)=>s+(p.facturacion_bruta||0),0);
+  const pedTotal = products.reduce((s,p)=>s+(p.total_pedidos||0),0);
+  const conVentas = products.filter(p=>(p.total_pedidos||0)>0).length;
+  const tasaExito = total ? Math.round(conVentas/total*100) : 0;
+  const mejor = [...products].sort((a,b)=>(b.facturacion_bruta||0)-(a.facturacion_bruta||0))[0];
+  const notasArr = products.filter(p=>p.nota);
+  const mediaNota = notasArr.length ? (notasArr.reduce((s,p)=>s+p.nota,0)/notasArr.length).toFixed(1) : '—';
+  const benefTotal = products.filter(p=>p.beneficio_neto).reduce((s,p)=>s+(p.beneficio_neto||0),0);
+
+  const stats = [
+    { icon:'📦', val:total, label:'Productos testeados', sub:`${products.filter(p=>p.estado==='activo').length} activos actualmente` },
+    { icon:'💰', val:fmt(factTotal)+'€', label:'Facturación total', sub:`${fmt(pedTotal)} pedidos acumulados` },
+    { icon:'📈', val:fmt(benefTotal)+'€', label:'Beneficio neto total', sub:'solo con datos registrados' },
+    { icon:'🎯', val:tasaExito+'%', label:'Tasa de éxito', sub:`${conVentas} de ${total} productos con ventas` },
+    { icon:'🏆', val:mejor?mejor.nombre:'—', label:'Mejor producto', sub:mejor?fmt(mejor.facturacion_bruta)+'€ facturados':'' },
+    { icon:'⭐', val:mediaNota+(mediaNota!=='—'?'/10':''), label:'Nota media', sub:`${notasArr.length} productos valorados` },
+  ];
+
+  return `
+  <div style="max-width:1280px;margin:0 auto;padding:32px 28px" class="fade-in">
+    <div style="margin-bottom:28px">
+      <h1 style="font-size:24px;font-weight:900;color:#e2e8f0">Dashboard</h1>
+      <p style="font-size:13px;color:#64748b;margin-top:4px">Visión global de todos tus productos testeados</p>
+    </div>
+
+    <!-- Stats grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:28px">
+      ${stats.map(s=>`
+        <div class="card" style="padding:20px">
+          <div style="font-size:24px;margin-bottom:10px">${s.icon}</div>
+          <div style="font-size:22px;font-weight:900;color:#e2e8f0;line-height:1.1">${s.val}</div>
+          <div style="font-size:12px;font-weight:600;color:#64748b;margin-top:5px">${s.label}</div>
+          ${s.sub?`<div style="font-size:11px;color:#334155;margin-top:3px">${s.sub}</div>`:''}
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Charts row 1 -->
+    <div style="display:grid;grid-template-columns:3fr 2fr;gap:18px;margin-bottom:18px">
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:4px">Facturación por producto</div>
+        <div style="font-size:11px;color:#334155;margin-bottom:14px">Verde = activo · Morado = cortado</div>
+        <div style="position:relative;height:300px"><canvas id="chart-revenue"></canvas></div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:4px">Motivos de corte</div>
+        <div style="font-size:11px;color:#334155;margin-bottom:14px">Distribución de razones</div>
+        <div style="position:relative;height:300px"><canvas id="chart-motivos"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Charts row 2 -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:28px">
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:14px">Pedidos — Top 10</div>
+        <div style="position:relative;height:220px"><canvas id="chart-orders"></canvas></div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:14px">Views por plataforma</div>
+        <div style="position:relative;height:220px"><canvas id="chart-views-platform"></canvas></div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:14px">€/Mill por plataforma</div>
+        <div style="position:relative;height:220px"><canvas id="chart-eurmill"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Products table -->
+    <div class="card" style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0">Historial completo</div>
+        <button onclick="setView('products')" style="background:none;border:none;color:#a78bfa;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Ver todos →</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+            ${['#','Producto','Nicho','Estado','Pedidos','Facturación','Beneficio','Nota','¿Repetir?','Motivo corte'].map(h=>`<th style="text-align:left;padding:8px 10px;color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap">${h}</th>`).join('')}
+          </tr></thead>
+          <tbody>
+            ${[...products].sort((a,b)=>new Date(a.fecha_inicio||0)-new Date(b.fecha_inicio||0)).map((p,i)=>`
+              <tr onclick="showDetail('${p.id}')" style="border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background='transparent'">
+                <td style="padding:9px 10px;color:#334155;font-size:11px">${i+1}</td>
+                <td style="padding:9px 10px;font-weight:700;color:#e2e8f0">${p.nombre}</td>
+                <td style="padding:9px 10px;color:#64748b">${p.nicho||'—'}</td>
+                <td style="padding:9px 10px">${estadoBadge(p.estado)}</td>
+                <td style="padding:9px 10px;color:#e2e8f0;font-weight:600">${fmt(p.total_pedidos)}</td>
+                <td style="padding:9px 10px;color:#a78bfa;font-weight:700">${fmt(p.facturacion_bruta)}€</td>
+                <td style="padding:9px 10px;color:#4ade80;font-weight:600">${p.beneficio_neto!=null?fmt(p.beneficio_neto)+'€':'—'}</td>
+                <td style="padding:9px 10px">${p.nota?`<span style="color:${notaColor(p.nota)};font-weight:700">${p.nota}/10</span>`:'<span style="color:#334155">—</span>'}</td>
+                <td style="padding:9px 10px">${p.repetir==='Sí'?'<span class="badge badge-green">Sí</span>':p.repetir==='No'?'<span class="badge badge-red">No</span>':'<span style="color:#334155">—</span>'}</td>
+                <td style="padding:9px 10px;color:#64748b;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.motivo_corte||'—'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Seed -->
+    <div style="text-align:center;padding:4px 0 24px">
+      <button onclick="seedHistorical()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:#334155;font-size:12px;padding:7px 16px;border-radius:8px;cursor:pointer;font-family:inherit">📥 Importar histórico del CSV</button>
+    </div>
+  </div>`;
+}
+
+// ── CHARTS ────────────────────────────────────────────
+function initCharts() {
+  const tp = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ labels:{ color:'#64748b', font:{ family:'Inter', size:11 }, padding:10 } },
+      tooltip:{ backgroundColor:'#0f0f1a', borderColor:'rgba(255,255,255,.1)', borderWidth:1, titleColor:'#e2e8f0', bodyColor:'#94a3b8', padding:10 }
+    },
+    scales:{
+      x:{ ticks:{ color:'#64748b', font:{ family:'Inter', size:10 } }, grid:{ color:'rgba(255,255,255,.04)' }, border:{ color:'rgba(255,255,255,.04)' } },
+      y:{ ticks:{ color:'#64748b', font:{ family:'Inter', size:10 } }, grid:{ color:'rgba(255,255,255,.04)' }, border:{ color:'rgba(255,255,255,.04)' } }
+    }
+  };
+
+  // Revenue bar
+  const sorted = [...products].sort((a,b)=>(b.facturacion_bruta||0)-(a.facturacion_bruta||0));
+  const ctx1 = document.getElementById('chart-revenue');
+  if (ctx1) chartInstances.revenue = new Chart(ctx1, {
+    type:'bar',
+    data:{
+      labels: sorted.map(p=>p.nombre),
+      datasets:[{ label:'Facturación (€)', data:sorted.map(p=>p.facturacion_bruta||0),
+        backgroundColor: sorted.map(p=>p.estado==='activo'?'rgba(74,222,128,.65)':'rgba(167,139,250,.65)'),
+        borderColor: sorted.map(p=>p.estado==='activo'?'#4ade80':'#a78bfa'),
+        borderWidth:1, borderRadius:5 }]
+    },
+    options:{ ...tp, plugins:{...tp.plugins, legend:{display:false}} }
+  });
+
+  // Motivos doughnut
+  const motivos = {};
+  products.forEach(p=>{ if(p.motivo_corte) motivos[p.motivo_corte]=(motivos[p.motivo_corte]||0)+1; });
+  const mLabels = Object.keys(motivos), mVals = Object.values(motivos);
+  const palette = ['#a78bfa','#f472b6','#60a5fa','#4ade80','#fbbf24','#f87171','#34d399','#fb923c','#e879f9','#38bdf8'];
+  const ctx3 = document.getElementById('chart-motivos');
+  if (ctx3 && mLabels.length) chartInstances.motivos = new Chart(ctx3, {
+    type:'doughnut',
+    data:{ labels:mLabels, datasets:[{ data:mVals,
+      backgroundColor:mLabels.map((_,i)=>palette[i%palette.length]+'bb'),
+      borderColor:mLabels.map((_,i)=>palette[i%palette.length]),
+      borderWidth:1, hoverOffset:6 }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{
+      legend:{ position:'bottom', labels:{ color:'#64748b', font:{ family:'Inter', size:10 }, padding:8, boxWidth:10 } },
+      tooltip:tp.plugins.tooltip
+    }, cutout:'60%' }
+  });
+
+  // Orders bar top10
+  const sortedOrd = [...products].sort((a,b)=>(b.total_pedidos||0)-(a.total_pedidos||0)).slice(0,10);
+  const ctx2 = document.getElementById('chart-orders');
+  if (ctx2) chartInstances.orders = new Chart(ctx2, {
+    type:'bar',
+    data:{ labels:sortedOrd.map(p=>p.nombre), datasets:[{ label:'Pedidos',
+      data:sortedOrd.map(p=>p.total_pedidos||0),
+      backgroundColor:'rgba(244,114,182,.65)', borderColor:'#f472b6', borderWidth:1, borderRadius:5 }]
+    },
+    options:{ ...tp, plugins:{...tp.plugins, legend:{display:false}} }
+  });
+
+  // Views by platform doughnut
+  const plNames = ['TikTok','Instagram','YouTube','Facebook'];
+  const plViews = [
+    products.reduce((s,p)=>s+(p.tiktok_views||0),0),
+    products.reduce((s,p)=>s+(p.instagram_views||0),0),
+    products.reduce((s,p)=>s+(p.youtube_views||0),0),
+    products.reduce((s,p)=>s+(p.facebook_views||0),0),
+  ];
+  const plColors = ['#00f2ea','#e1306c','#ff0000','#4267b2'];
+  const ctx4 = document.getElementById('chart-views-platform');
+  if (ctx4) chartInstances.viewsPlatform = new Chart(ctx4, {
+    type:'doughnut',
+    data:{ labels:plNames, datasets:[{ data:plViews,
+      backgroundColor:plColors.map(c=>c+'bb'), borderColor:plColors, borderWidth:1, hoverOffset:6 }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{
+      legend:{ position:'bottom', labels:{ color:'#64748b', font:{ family:'Inter', size:10 }, padding:8, boxWidth:10 } },
+      tooltip:tp.plugins.tooltip
+    }}
+  });
+
+  // €/Mill by platform bar
+  const plRev = [
+    products.reduce((s,p)=>s+(p.tiktok_facturacion||0),0),
+    products.reduce((s,p)=>s+(p.instagram_facturacion||0),0),
+    products.reduce((s,p)=>s+(p.youtube_facturacion||0),0),
+    products.reduce((s,p)=>s+(p.facebook_facturacion||0),0),
+  ];
+  const eurMills = plNames.map((_,i)=>plViews[i]>0?(plRev[i]/(plViews[i]/1e6)).toFixed(2):0);
+  const ctx5 = document.getElementById('chart-eurmill');
+  if (ctx5) chartInstances.eurmill = new Chart(ctx5, {
+    type:'bar',
+    data:{ labels:plNames, datasets:[{ label:'€/Mill',
+      data:eurMills,
+      backgroundColor:plColors.map(c=>c+'bb'), borderColor:plColors, borderWidth:1, borderRadius:5 }]
+    },
+    options:{ ...tp, plugins:{...tp.plugins, legend:{display:false}} }
+  });
+}
+
+// ── PRODUCTS LIST ─────────────────────────────────────
+function renderProducts() {
+  const filtered = getFiltered();
+  const proveedores = [...new Set(products.map(p=>p.proveedor).filter(Boolean))];
+
+  return `
+  <div style="max-width:1280px;margin:0 auto;padding:32px 28px" class="fade-in">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h1 style="font-size:24px;font-weight:900;color:#e2e8f0">Productos</h1>
+        <p style="font-size:13px;color:#64748b;margin-top:4px">${filtered.length} de ${products.length} productos</p>
+      </div>
+    </div>
+    <!-- Filters -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center">
+      <input type="text" placeholder="Buscar nombre, nicho, motivo..." value="${esc(filter.search)}"
+        oninput="filter.search=this.value;reloadList()"
+        style="padding:9px 14px;border-radius:10px;background:#0f0f1a;border:1px solid rgba(255,255,255,.08);color:#e2e8f0;font-size:13px;font-family:inherit;min-width:240px" />
+      <select onchange="filter.estado=this.value;reloadList()" style="padding:9px 14px;border-radius:10px;background:#0f0f1a;border:1px solid rgba(255,255,255,.08);color:#e2e8f0;font-size:13px;font-family:inherit">
+        <option value="todos" ${filter.estado==='todos'?'selected':''}>Estado: Todos</option>
+        <option value="activo" ${filter.estado==='activo'?'selected':''}>Activos</option>
+        <option value="cortado" ${filter.estado==='cortado'?'selected':''}>Cortados</option>
+      </select>
+      <select onchange="filter.proveedor=this.value;reloadList()" style="padding:9px 14px;border-radius:10px;background:#0f0f1a;border:1px solid rgba(255,255,255,.08);color:#e2e8f0;font-size:13px;font-family:inherit">
+        <option value="todos" ${filter.proveedor==='todos'?'selected':''}>Proveedor: Todos</option>
+        ${proveedores.map(p=>`<option value="${esc(p)}" ${filter.proveedor===p?'selected':''}>${esc(p)}</option>`).join('')}
+      </select>
+      <select onchange="sort=this.value;reloadList()" style="padding:9px 14px;border-radius:10px;background:#0f0f1a;border:1px solid rgba(255,255,255,.08);color:#e2e8f0;font-size:13px;font-family:inherit">
+        <option value="fecha_desc" ${sort==='fecha_desc'?'selected':''}>Más reciente</option>
+        <option value="fecha_asc" ${sort==='fecha_asc'?'selected':''}>Más antiguo</option>
+        <option value="facturacion_desc" ${sort==='facturacion_desc'?'selected':''}>Mayor facturación</option>
+        <option value="pedidos_desc" ${sort==='pedidos_desc'?'selected':''}>Más pedidos</option>
+        <option value="nota_desc" ${sort==='nota_desc'?'selected':''}>Mayor nota</option>
+      </select>
+    </div>
+    <!-- Grid -->
+    <div id="products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px">
+      ${filtered.map(productCard).join('')}
+    </div>
+    ${filtered.length===0?'<div style="text-align:center;padding:80px;color:#334155;font-size:15px">No se encontraron productos</div>':''}
+  </div>`;
+}
+
+function reloadList() {
+  const g = document.getElementById('products-grid');
+  if (g) g.innerHTML = getFiltered().map(productCard).join('');
+}
+
+function productCard(p) {
+  const dias = daysBetween(p.fecha_inicio, p.fecha_fin);
+  const em = calcEurMill(p);
+  return `
+  <div onclick="showDetail('${p.id}')" style="background:#0f0f1a;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;cursor:pointer;transition:all .2s"
+       onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(167,139,250,.25)';this.style.boxShadow='0 20px 40px rgba(0,0,0,.35)'"
+       onmouseout="this.style.transform='';this.style.borderColor='rgba(255,255,255,.06)';this.style.boxShadow=''">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+      <div>
+        <div style="font-size:16px;font-weight:800;color:#e2e8f0">${esc(p.nombre)}</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">${esc(p.nicho||'Sin nicho')} · ${esc(p.proveedor||'—')}</div>
+      </div>
+      ${estadoBadge(p.estado)}
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.05);margin:12px 0">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+      <div><div style="font-size:18px;font-weight:800;color:#a78bfa">${fmt(p.facturacion_bruta)}€</div><div style="font-size:11px;color:#64748b">Facturación</div></div>
+      <div><div style="font-size:18px;font-weight:800;color:#e2e8f0">${fmt(p.total_pedidos)}</div><div style="font-size:11px;color:#64748b">Pedidos</div></div>
+      <div>
+        ${p.nota?`<div style="font-size:18px;font-weight:800;color:${notaColor(p.nota)}">${p.nota}/10</div>`:`<div style="font-size:18px;font-weight:800;color:#334155">—</div>`}
+        <div style="font-size:11px;color:#64748b">Nota</div>
+      </div>
+    </div>
+    ${em?`<div style="font-size:12px;color:#64748b;margin-bottom:8px">€/Mill total: <span style="color:#f472b6;font-weight:700">${em.toFixed(1)}€</span></div>`:''}
+    ${p.motivo_corte?`<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:7px 10px;font-size:12px;color:#64748b">✂️ ${esc(p.motivo_corte)}</div>`:''}
+    ${p.aprendizaje_clave?`<div style="font-size:11px;color:#475569;margin-top:8px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">💡 ${esc(p.aprendizaje_clave)}</div>`:''}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <span style="font-size:11px;color:#334155">${fmtDate(p.fecha_inicio)}${p.fecha_fin?' → '+fmtDate(p.fecha_fin):' → hoy'}</span>
+      ${dias?`<span style="font-size:11px;color:#334155">${dias}d</span>`:''}
+    </div>
+  </div>`;
+}
+
+// ── DETAIL ────────────────────────────────────────────
+function showDetail(id) {
+  selectedProduct = products.find(p=>p.id===id);
+  view = 'detail';
+  render();
+}
+
+function renderDetail() {
+  const p = selectedProduct;
+  if (!p) return '<div>No encontrado</div>';
+  const dias = daysBetween(p.fecha_inicio, p.fecha_fin);
+  const margenBruto = (p.precio_venta&&p.coste) ? ((p.precio_venta-p.coste)/p.precio_venta*100).toFixed(1) : null;
+  const views = totalViews(p), factRedes = totalFactRedes(p);
+  const em = views>0&&factRedes>0 ? (factRedes/(views/1e6)).toFixed(2) : null;
+  const platforms = [
+    { name:'TikTok', views:p.tiktok_views, fact:p.tiktok_facturacion, color:'#00f2ea', icon:'🎵' },
+    { name:'Instagram', views:p.instagram_views, fact:p.instagram_facturacion, color:'#e1306c', icon:'📷' },
+    { name:'YouTube', views:p.youtube_views, fact:p.youtube_facturacion, color:'#ff0000', icon:'▶️' },
+    { name:'Facebook', views:p.facebook_views, fact:p.facebook_facturacion, color:'#4267b2', icon:'👍' },
+  ].filter(pl=>pl.views||pl.fact);
+
+  const infoRow = (label, val, color='#e2e8f0') => `<div><div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">${label}</div><div style="font-size:15px;font-weight:700;color:${color}">${val||'—'}</div></div>`;
+  const qaRow = (icon, q, a) => a ? `<div><div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:5px">${icon} ${q}</div><div style="font-size:13px;color:#cbd5e1;line-height:1.6;background:rgba(255,255,255,.03);border-radius:8px;padding:10px 14px">${esc(a)}</div></div>` : '';
+  const sectionTitle = (t) => `<div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px">${t}</div>`;
+
+  return `
+  <div style="max-width:900px;margin:0 auto;padding:32px 28px" class="fade-in">
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap">
+      <div>
+        <button onclick="setView('products')" style="background:none;border:none;color:#64748b;font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:8px;padding:0">← Volver a productos</button>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <h1 style="font-size:28px;font-weight:900;color:#e2e8f0">${esc(p.nombre)}</h1>
+          ${estadoBadge(p.estado)}
+          ${p.nota?`<span style="font-size:18px;font-weight:800;color:${notaColor(p.nota)}">⭐ ${p.nota}/10</span>`:''}
+          ${p.repetir==='Sí'?'<span class="badge badge-green">¿Repetir? SÍ</span>':p.repetir==='No'?'<span class="badge badge-red">¿Repetir? NO</span>':''}
+        </div>
+        <div style="font-size:14px;color:#64748b;margin-top:6px">${esc(p.nicho||'Sin nicho')} · ${esc(p.proveedor||'—')} · ${fmtDate(p.fecha_inicio)} → ${p.fecha_fin?fmtDate(p.fecha_fin):'hoy'}${dias?` (${dias} días)`:''}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="startEdit('${p.id}')" style="padding:8px 16px;border-radius:10px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);color:#a78bfa;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">✏️ Editar</button>
+        <button onclick="deleteProduct('${p.id}')" style="padding:8px 16px;border-radius:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);color:#f87171;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">🗑 Eliminar</button>
+      </div>
+    </div>
+
+    <!-- Info General -->
+    <div class="card" style="margin-bottom:14px">
+      ${sectionTitle('📦 Info General')}
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">
+        ${infoRow('Proveedor', esc(p.proveedor))}
+        ${infoRow('Precio venta', p.precio_venta!=null?fmt(p.precio_venta,2)+'€':null)}
+        ${infoRow('Coste', p.coste!=null?fmt(p.coste,2)+'€':null)}
+        ${infoRow('Margen bruto', margenBruto?margenBruto+'%':null)}
+        ${infoRow('Temporada', p.temporada?'Sí':'No')}
+        ${infoRow('Días activo', dias?dias+'d':null)}
+      </div>
+    </div>
+
+    <!-- Métricas -->
+    <div class="card" style="margin-bottom:14px">
+      ${sectionTitle('💰 Métricas de Ventas')}
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px">
+        ${infoRow('Pedidos totales', fmt(p.total_pedidos), '#e2e8f0')}
+        ${infoRow('Facturación bruta', p.facturacion_bruta!=null?fmt(p.facturacion_bruta,2)+'€':null, '#a78bfa')}
+        ${infoRow('Beneficio neto', p.beneficio_neto!=null?fmt(p.beneficio_neto,2)+'€':null, '#4ade80')}
+        ${infoRow('Sesiones web', p.sesiones_web?fmt(p.sesiones_web):null)}
+        ${infoRow('Tasa conversión', p.tasa_conversion?p.tasa_conversion+'%':null)}
+        ${infoRow('Devoluciones', p.devoluciones!=null?p.devoluciones+' uds':null)}
+        ${infoRow('Día máx. facturación', esc(p.dia_max_facturacion))}
+      </div>
+    </div>
+
+    <!-- Plataformas -->
+    ${platforms.length>0?`
+    <div class="card" style="margin-bottom:14px">
+      ${sectionTitle('📊 Contenido & €/Mill por Plataforma')}
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+            <th style="text-align:left;padding:8px 12px;color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase">Plataforma</th>
+            <th style="text-align:right;padding:8px 12px;color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase">Views</th>
+            <th style="text-align:right;padding:8px 12px;color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase">Facturación</th>
+            <th style="text-align:right;padding:8px 12px;color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase">€/Mill</th>
+          </tr></thead>
+          <tbody>
+            ${platforms.map(pl=>{
+              const plEm = pl.views>0&&pl.fact>0?(pl.fact/(pl.views/1e6)).toFixed(2):'—';
+              return `<tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+                <td style="padding:10px 12px"><span style="color:${pl.color}">${pl.icon}</span> <span style="font-weight:600;color:#e2e8f0">${pl.name}</span></td>
+                <td style="padding:10px 12px;text-align:right;color:#64748b">${pl.views?fmt(pl.views):'—'}</td>
+                <td style="padding:10px 12px;text-align:right;color:#a78bfa;font-weight:600">${pl.fact?fmt(pl.fact,2)+'€':'—'}</td>
+                <td style="padding:10px 12px;text-align:right;color:#f472b6;font-weight:700">${plEm!=='—'?plEm+'€':'—'}</td>
+              </tr>`;
+            }).join('')}
+            <tr style="border-top:1px solid rgba(255,255,255,.1)">
+              <td style="padding:10px 12px;font-weight:700;color:#e2e8f0">TOTAL</td>
+              <td style="padding:10px 12px;text-align:right;color:#e2e8f0;font-weight:700">${fmt(views)}</td>
+              <td style="padding:10px 12px;text-align:right;color:#a78bfa;font-weight:800">${fmt(factRedes,2)}€</td>
+              <td style="padding:10px 12px;text-align:right;color:#f472b6;font-weight:800">${em?em+'€':'—'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>`:''}
+
+    <!-- Contenido -->
+    ${(p.video_mejor||p.enfoque_no_funciono||p.cambios_contenido||p.facil_grabar)?`
+    <div class="card" style="margin-bottom:14px">
+      ${sectionTitle('🎬 Análisis de Contenido')}
+      <div style="display:flex;flex-direction:column;gap:14px">
+        ${qaRow('✅','¿Qué tipo de vídeo funcionó mejor?',p.video_mejor)}
+        ${qaRow('❌','¿Qué enfoque NO funcionó?',p.enfoque_no_funciono)}
+        ${qaRow('💭','¿Qué cambiarías en el contenido?',p.cambios_contenido)}
+        ${qaRow('📹','¿El producto era fácil de grabar?',p.facil_grabar)}
+      </div>
+    </div>`:''}
+
+    <!-- Diagnóstico -->
+    ${(p.motivo_corte||p.que_funciono||p.que_replicarias||p.producto_o_contenido)?`
+    <div class="card" style="margin-bottom:14px">
+      ${sectionTitle('🔍 Diagnóstico Final')}
+      <div style="display:flex;flex-direction:column;gap:14px">
+        ${qaRow('✂️','¿Por qué lo cortaste?',p.motivo_corte)}
+        ${qaRow('✅','¿Qué funcionó bien?',p.que_funciono)}
+        ${qaRow('🔁','¿Qué replicarías en el siguiente?',p.que_replicarias)}
+        ${qaRow('🤔','¿Fue el producto o el contenido el fallo?',p.producto_o_contenido)}
+      </div>
+    </div>`:''}
+
+    <!-- Veredicto -->
+    ${p.aprendizaje_clave?`
+    <div style="background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(162,28,175,.12));border:1px solid rgba(167,139,250,.22);border-radius:16px;padding:24px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">⚡ Aprendizaje Clave</div>
+      <div style="font-size:15px;color:#e2e8f0;line-height:1.7;font-weight:500">${esc(p.aprendizaje_clave)}</div>
+    </div>`:''}
+
+    <div style="height:40px"></div>
+  </div>`;
+}
+
+// ── FORM ─────────────────────────────────────────────
+function startEdit(id) {
+  editingId = id;
+  selectedProduct = products.find(p=>p.id===id);
+  view = 'form';
+  render();
+}
+
+function renderForm() {
+  const p = editingId ? (selectedProduct||{}) : {};
+
+  const inp = (id, label, type='text', val='') => `
+    <div>
+      <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">${label}</label>
+      <input id="${id}" type="${type}" value="${esc(val)}" />
+    </div>`;
+
+  const sel = (id, label, opts, val='') => `
+    <div>
+      <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">${label}</label>
+      <select id="${id}">${opts(val)}</select>
+    </div>`;
+
+  const ta = (id, label, val='') => `
+    <div>
+      <label style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">${label}</label>
+      <textarea id="${id}">${esc(val)}</textarea>
+    </div>`;
+
+  const grid = (cols, ...fields) => `<div style="display:grid;grid-template-columns:${cols};gap:14px">${fields.join('')}</div>`;
+  const block = (title, ...rows) => `<div class="card" style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px">${title}</div>${rows.join('<div style="margin-top:14px"></div>')}</div>`;
+
+  const v = p.estado||'activo', prov = p.proveedor||'';
+  const rep = p.repetir||'', tmp = p.temporada?'true':'false';
+
+  return `
+  <div style="max-width:820px;margin:0 auto;padding:32px 28px" class="fade-in">
+    <div style="margin-bottom:28px">
+      <button onclick="${editingId?"view='detail';render()":"setView('products')"}" style="background:none;border:none;color:#64748b;font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:8px;padding:0">← Volver</button>
+      <h1 style="font-size:22px;font-weight:900;color:#e2e8f0">${editingId?'Editar producto':'Nuevo producto'}</h1>
+    </div>
+
+    ${block('📦 Info General',
+      grid('repeat(auto-fit,minmax(200px,1fr))',
+        inp('f-nombre','Nombre del producto','text',p.nombre||''),
+        inp('f-nicho','Nicho','text',p.nicho||''),
+        sel('f-proveedor','Proveedor',(cv)=>`
+          <option value="" ${!prov?'selected':''}>Sin especificar</option>
+          <option value="Aliexpress" ${prov==='Aliexpress'?'selected':''}>Aliexpress</option>
+          <option value="Agente Privado" ${prov==='Agente Privado'?'selected':''}>Agente Privado</option>
+          <option value="CJ Dropshipping" ${prov==='CJ Dropshipping'?'selected':''}>CJ Dropshipping</option>
+          <option value="Otro" ${prov==='Otro'?'selected':''}>Otro</option>
+        `),
+        sel('f-estado','Estado',(cv)=>`
+          <option value="activo" ${v==='activo'?'selected':''}>Activo</option>
+          <option value="cortado" ${v==='cortado'?'selected':''}>Cortado</option>
+        `),
+        inp('f-fecha-inicio','Fecha inicio','date',p.fecha_inicio||''),
+        inp('f-fecha-fin','Fecha fin / corte','date',p.fecha_fin||''),
+        inp('f-precio','Precio venta (€)','number',p.precio_venta||''),
+        inp('f-coste','Coste (€)','number',p.coste||''),
+        sel('f-temporada','¿Temporada?',(cv)=>`
+          <option value="false" ${tmp==='false'?'selected':''}>No</option>
+          <option value="true" ${tmp==='true'?'selected':''}>Sí</option>
+        `)
+      )
+    )}
+
+    ${block('📊 Views & Facturación por Plataforma',
+      grid('1fr 1fr',
+        inp('f-tt-views','TikTok — Views','number',p.tiktok_views||''),
+        inp('f-tt-fact','TikTok — Facturación (€)','number',p.tiktok_facturacion||''),
+        inp('f-ig-views','Instagram — Views','number',p.instagram_views||''),
+        inp('f-ig-fact','Instagram — Facturación (€)','number',p.instagram_facturacion||''),
+        inp('f-yt-views','YouTube — Views','number',p.youtube_views||''),
+        inp('f-yt-fact','YouTube — Facturación (€)','number',p.youtube_facturacion||''),
+        inp('f-fb-views','Facebook — Views','number',p.facebook_views||''),
+        inp('f-fb-fact','Facebook — Facturación (€)','number',p.facebook_facturacion||'')
+      )
+    )}
+
+    ${block('💰 Métricas de Ventas',
+      grid('repeat(auto-fit,minmax(200px,1fr))',
+        inp('f-pedidos','Total pedidos','number',p.total_pedidos||''),
+        inp('f-facturacion','Facturación bruta (€)','number',p.facturacion_bruta||''),
+        inp('f-beneficio','Beneficio neto (€)','number',p.beneficio_neto||''),
+        inp('f-sesiones','Sesiones web','number',p.sesiones_web||''),
+        inp('f-conversion','Tasa conversión (%)','number',p.tasa_conversion||''),
+        inp('f-devoluciones','Devoluciones (uds)','number',p.devoluciones||''),
+        inp('f-dia-max','Día máx. facturación','text',p.dia_max_facturacion||'')
+      )
+    )}
+
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px">🎬 Análisis de Contenido</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        ${ta('f-video-mejor','¿Qué tipo de vídeo funcionó mejor?',p.video_mejor||'')}
+        ${ta('f-enfoque-no','¿Qué enfoque NO funcionó?',p.enfoque_no_funciono||'')}
+        ${ta('f-cambios','¿Qué cambiarías en el contenido?',p.cambios_contenido||'')}
+        ${inp('f-facil-grabar','¿El producto era fácil de grabar?','text',p.facil_grabar||'')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px">🔍 Diagnóstico Final</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        ${inp('f-motivo','Motivo de corte','text',p.motivo_corte||'')}
+        ${ta('f-funciono','¿Qué funcionó bien?',p.que_funciono||'')}
+        ${ta('f-replicarias','¿Qué replicarías en el siguiente?',p.que_replicarias||'')}
+        ${ta('f-prod-cont','¿Fue el producto o el contenido el fallo?',p.producto_o_contenido||'')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:28px">
+      <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px">⚡ Veredicto</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        ${inp('f-nota','Nota (1-10)','number',p.nota||'')}
+        ${sel('f-repetir','¿Repetirías?',(cv)=>`
+          <option value="" ${!rep?'selected':''}>Sin responder</option>
+          <option value="Sí" ${rep==='Sí'?'selected':''}>Sí</option>
+          <option value="No" ${rep==='No'?'selected':''}>No</option>
+        `)}
+      </div>
+      ${ta('f-aprendizaje','Aprendizaje clave',p.aprendizaje_clave||'')}
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:flex-end;padding-bottom:40px">
+      <button onclick="${editingId?"view='detail';render()":"setView('products')"}" style="padding:12px 24px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#94a3b8;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Cancelar</button>
+      <button onclick="submitForm()" style="padding:12px 28px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a21caf);border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">${editingId?'Guardar cambios':'Añadir producto'}</button>
+    </div>
+  </div>`;
+}
+
+function submitForm() {
+  const g = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
+  const gn = id => { const v=g(id); return v===''?null:Number(v); };
+  const nombre = g('f-nombre');
+  if (!nombre) { alert('El nombre del producto es obligatorio'); return; }
+  saveProduct({
+    nombre, nicho:g('f-nicho')||null, proveedor:g('f-proveedor')||null, estado:g('f-estado')||'activo',
+    fecha_inicio:g('f-fecha-inicio')||null, fecha_fin:g('f-fecha-fin')||null,
+    precio_venta:gn('f-precio'), coste:gn('f-coste'), temporada:g('f-temporada')==='true',
+    tiktok_views:gn('f-tt-views'), tiktok_facturacion:gn('f-tt-fact'),
+    instagram_views:gn('f-ig-views'), instagram_facturacion:gn('f-ig-fact'),
+    youtube_views:gn('f-yt-views'), youtube_facturacion:gn('f-yt-fact'),
+    facebook_views:gn('f-fb-views'), facebook_facturacion:gn('f-fb-fact'),
+    total_pedidos:gn('f-pedidos'), facturacion_bruta:gn('f-facturacion'),
+    beneficio_neto:gn('f-beneficio'), sesiones_web:gn('f-sesiones'),
+    tasa_conversion:gn('f-conversion'), devoluciones:gn('f-devoluciones'),
+    dia_max_facturacion:g('f-dia-max')||null,
+    video_mejor:g('f-video-mejor')||null, enfoque_no_funciono:g('f-enfoque-no')||null,
+    cambios_contenido:g('f-cambios')||null, facil_grabar:g('f-facil-grabar')||null,
+    motivo_corte:g('f-motivo')||null, que_funciono:g('f-funciono')||null,
+    que_replicarias:g('f-replicarias')||null, producto_o_contenido:g('f-prod-cont')||null,
+    nota:gn('f-nota'), repetir:g('f-repetir')||null, aprendizaje_clave:g('f-aprendizaje')||null,
+  });
+}
+
+// ── BOOT ─────────────────────────────────────────────
+if (sessionStorage.getItem('tracker_auth')==='1') { view='dashboard'; init(); }
+else { renderLogin(); }
+</script>
+</body>
+</html>
