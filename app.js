@@ -272,7 +272,7 @@ function render() {
       </div>
       <div style="display:flex;gap:8px">
         <button onclick="exportCSV()" style="background:#1e293b;border:1px solid #334155;color:#cbd5e1;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px">⬇ Exportar CSV</button>
-        <button onclick="sessionStorage.removeItem('auth');renderLogin()" style="background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px">🔒 Salir</button>
+        <button onclick="logout()" style="background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px">🔒 Salir</button>
       </div>
     </div>
 
