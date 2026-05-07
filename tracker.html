@@ -867,8 +867,16 @@ function submitForm() {
 }
 
 // ── BOOT ─────────────────────────────────────────────
-if (sessionStorage.getItem('tracker_auth')==='1') { view='dashboard'; init(); }
-else { renderLogin(); }
+(async function() {
+  const { data } = await db.auth.getSession();
+  if (data && data.session) {
+    isAuthenticated = true;
+    view = 'dashboard';
+    init();
+  } else {
+    renderLogin();
+  }
+})();
 </script>
 </body>
 </html>
