@@ -50,10 +50,9 @@ function renderLogin() {
 }
 
 function pinPress(n) {
-  if (pinValue.length >= 4) return;
+  if (pinValue.length >= 6) return;
   pinValue += n;
   updateDots();
-  if (pinValue.length === 4) setTimeout(pinSubmit, 150);
 }
 
 function pinClear() {
@@ -62,24 +61,42 @@ function pinClear() {
 }
 
 function updateDots() {
-  for (var i = 0; i < 4; i++) {
+  for (var i = 0; i < 6; i++) {
     var dot = document.getElementById('dot-' + i);
-    if (!dot) return;
+    if (!dot) continue;
     dot.style.background = i < pinValue.length ? '#a78bfa' : 'transparent';
     dot.style.borderColor = i < pinValue.length ? '#a78bfa' : '#334155';
   }
 }
 
-function pinSubmit() {
-  if (pinValue === PIN) {
-    sessionStorage.setItem('auth', '1');
-    loadSubs();
-  } else {
-    pinValue = '';
-    updateDots();
-    var err = document.getElementById('pin-error');
-    if (err) { err.textContent = 'PIN incorrecto'; setTimeout(function(){ if(err) err.textContent = ''; }, 2000); }
+async function pinSubmit() {
+  if (pinValue.length < 4) {
+    var e = document.getElementById('pin-error');
+    if (e) { e.textContent = 'Mínimo 4 dígitos'; setTimeout(function(){ if(e) e.textContent=''; }, 1500); }
+    return;
   }
+  var err = document.getElementById('pin-error');
+  var btn = document.getElementById('pin-confirm');
+  if (err) err.textContent = 'Verificando…';
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+
+  var result = await db.auth.signInWithPassword({ email: AUTH_EMAIL, password: pinValue });
+
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+
+  if (result.error) {
+    pinValue = ''; updateDots();
+    if (err) { err.textContent = 'PIN incorrecto'; setTimeout(function(){ if(err) err.textContent=''; }, 2000); }
+  } else {
+    isAuthenticated = true;
+    loadSubs();
+  }
+}
+
+async function logout() {
+  isAuthenticated = false;
+  await db.auth.signOut();
+  renderLogin();
 }
 
 // ── DATA ─────────────────────────────────────────────
