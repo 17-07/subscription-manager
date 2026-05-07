@@ -1,103 +1,15 @@
-// AUTH_EMAIL es el identificador de usuario en Supabase. No es un dato sensible.
-// La contraseña la configuras en Supabase → Authentication → Users. Nunca en el código.
-const AUTH_EMAIL = 'samu@samudrop.com';
-const SUPABASE_URL = 'https://iofdeuwxlrefjjzdzbun.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvZmRldXd4bHJlZmpqemR6YnVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNzA3MDgsImV4cCI6MjA5MTk0NjcwOH0.UO6aQu9LbfNkbg0HxwYV4byzsxDZPEdBf4OZFSwXOYc';
-
-const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+// app.js — solo se carga tras autenticarse desde subscriptions.html
+// window.__db está inicializado por subscriptions.html antes de cargar este archivo.
+const db = window.__db;
 
 const CATEGORIES = {
-  tiendas: { label: 'Tiendas (Shopify)', icon: '🏪' },
-  apps: { label: 'Apps de Shopify', icon: '🧩' },
+  tiendas:      { label: 'Tiendas (Shopify)',   icon: '🏪' },
+  apps:         { label: 'Apps de Shopify',     icon: '🧩' },
   herramientas: { label: 'Herramientas Externas', icon: '🔧' },
 };
 
 let subs = [];
 let editingId = null;
-let pinValue = '';
-let isAuthenticated = false;
-
-// ── PIN ──────────────────────────────────────────────
-
-function renderLogin() {
-  pinValue = '';
-  document.getElementById('app').innerHTML = `
-  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#020617">
-    <div style="background:#0f172a;border:1px solid #1e293b;border-radius:20px;padding:40px 36px;width:100%;max-width:360px;text-align:center">
-      <div style="font-size:2.5rem;margin-bottom:8px">🔐</div>
-      <h2 style="margin:0 0 4px;font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
-        Bienvenido, Samu
-      </h2>
-      <p style="color:#64748b;font-size:13px;margin:0 0 28px">Introduce tu PIN para continuar</p>
-      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px" id="pin-dots">
-        ${[0,1,2,3,4,5].map(i => `<div id="dot-${i}" style="width:14px;height:14px;border-radius:50%;border:2px solid #334155;background:transparent;transition:all .2s"></div>`).join('')}
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
-        ${[1,2,3,4,5,6,7,8,9].map(n => `
-          <button onclick="pinPress('${n}')" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;font-size:1.3rem;font-weight:600;padding:18px;border-radius:12px;cursor:pointer;font-family:inherit">${n}</button>
-        `).join('')}
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-        <button onclick="pinClear()" style="background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:1rem;padding:18px;border-radius:12px;cursor:pointer;font-family:inherit">⌫</button>
-        <button onclick="pinPress('0')" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;font-size:1.3rem;font-weight:600;padding:18px;border-radius:12px;cursor:pointer;font-family:inherit">0</button>
-        <button id="pin-confirm" onclick="pinSubmit()" style="background:linear-gradient(135deg,#7c3aed,#a21caf);border:none;color:white;font-size:1rem;padding:18px;border-radius:12px;cursor:pointer;font-family:inherit;transition:opacity .2s">✓</button>
-      </div>
-      <div id="pin-error" style="color:#f87171;font-size:13px;margin-top:16px;min-height:20px"></div>
-      <a href="index.html" style="display:inline-block;margin-top:12px;color:#334155;font-size:12px;text-decoration:none">← Volver al inicio</a>
-    </div>
-  </div>`;
-}
-
-function pinPress(n) {
-  if (pinValue.length >= 6) return;
-  pinValue += n;
-  updateDots();
-}
-
-function pinClear() {
-  pinValue = pinValue.slice(0, -1);
-  updateDots();
-}
-
-function updateDots() {
-  for (var i = 0; i < 6; i++) {
-    var dot = document.getElementById('dot-' + i);
-    if (!dot) continue;
-    dot.style.background = i < pinValue.length ? '#a78bfa' : 'transparent';
-    dot.style.borderColor = i < pinValue.length ? '#a78bfa' : '#334155';
-  }
-}
-
-async function pinSubmit() {
-  if (pinValue.length < 4) {
-    var e = document.getElementById('pin-error');
-    if (e) { e.textContent = 'Mínimo 4 dígitos'; setTimeout(function(){ if(e) e.textContent=''; }, 1500); }
-    return;
-  }
-  var err = document.getElementById('pin-error');
-  var btn = document.getElementById('pin-confirm');
-  if (err) err.textContent = 'Verificando…';
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
-
-  var result = await db.auth.signInWithPassword({ email: AUTH_EMAIL, password: pinValue });
-
-  if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
-
-  if (result.error) {
-    pinValue = ''; updateDots();
-    if (err) { err.textContent = 'PIN incorrecto'; setTimeout(function(){ if(err) err.textContent=''; }, 2000); }
-  } else {
-    isAuthenticated = true;
-    loadSubs();
-  }
-}
-
-async function logout() {
-  isAuthenticated = false;
-  await db.auth.signOut();
-  renderLogin();
-}
 
 // ── DATA ─────────────────────────────────────────────
 
@@ -108,7 +20,7 @@ function daysUntil(dateStr) {
 }
 
 function statusColor(days) {
-  if (days < 7) return { bg: '#450a0a', border: '#dc2626', text: '#f87171' };
+  if (days < 7)  return { bg: '#450a0a', border: '#dc2626', text: '#f87171' };
   if (days < 15) return { bg: '#451a03', border: '#d97706', text: '#fbbf24' };
   return { bg: '#052e16', border: '#16a34a', text: '#4ade80' };
 }
@@ -123,7 +35,16 @@ function getTiendas() {
 
 async function loadSubs() {
   var result = await db.from('subscriptions').select('*').order('expiry', { ascending: true });
-  if (result.error) { console.error(result.error); return; }
+  if (result.error) {
+    // Si falla por falta de sesión, redirigir al login
+    if (result.error.code === 'PGRST301' || result.status === 401) {
+      await db.auth.signOut();
+      location.href = 'subscriptions.html';
+    } else {
+      console.error(result.error);
+    }
+    return;
+  }
   subs = result.data;
   render();
 }
@@ -152,15 +73,13 @@ function exportCSV() {
   var rows = subs.map(function(s) {
     return [
       CATEGORIES[s.category] ? CATEGORIES[s.category].label : s.category,
-      s.name,
-      s.store_name || '',
-      s.email || '',
-      s.price,
-      s.expiry,
-      daysUntil(s.expiry)
+      s.name, s.store_name || '', s.email || '',
+      s.price, s.expiry, daysUntil(s.expiry)
     ];
   });
-  var csv = [headers].concat(rows).map(function(r){ return r.map(function(c){ return '"'+c+'"'; }).join(','); }).join('\n');
+  var csv = [headers].concat(rows).map(function(r){
+    return r.map(function(c){ return '"'+c+'"'; }).join(',');
+  }).join('\n');
   var a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
   a.download = 'suscripciones-' + new Date().toISOString().split('T')[0] + '.csv';
@@ -176,11 +95,11 @@ function onCategoryChange() {
 }
 
 function handleFormSubmit() {
-  var name = document.getElementById('f-name').value.trim();
-  var price = parseFloat(document.getElementById('f-price').value);
-  var expiry = document.getElementById('f-expiry').value;
-  var category = document.getElementById('f-category').value;
-  var email = document.getElementById('f-email').value.trim();
+  var name      = document.getElementById('f-name').value.trim();
+  var price     = parseFloat(document.getElementById('f-price').value);
+  var expiry    = document.getElementById('f-expiry').value;
+  var category  = document.getElementById('f-category').value;
+  var email     = document.getElementById('f-email').value.trim();
   var store_name = '';
   if (category === 'apps') {
     var storeEl = document.getElementById('f-store');
@@ -189,7 +108,7 @@ function handleFormSubmit() {
   if (!name || !price || !expiry) { alert('Rellena todos los campos'); return; }
   if (category === 'apps' && !store_name) { alert('Selecciona la tienda a la que pertenece esta app'); return; }
 
-  var data = { name: name, price: price, expiry: expiry, category: category, email: email, store_name: store_name };
+  var data = { name, price, expiry, category, email, store_name };
 
   if (editingId) {
     updateSub(editingId, data);
@@ -199,7 +118,7 @@ function handleFormSubmit() {
   } else {
     addSub(data);
   }
-  document.getElementById('f-name').value = '';
+  document.getElementById('f-name').value  = '';
   document.getElementById('f-price').value = '';
   document.getElementById('f-expiry').value = '';
   document.getElementById('f-email').value = '';
@@ -211,10 +130,10 @@ function startEdit(id) {
   editingId = id;
   document.getElementById('f-category').value = s.category;
   onCategoryChange();
-  document.getElementById('f-name').value = s.name;
-  document.getElementById('f-price').value = s.price;
+  document.getElementById('f-name').value   = s.name;
+  document.getElementById('f-price').value  = s.price;
   document.getElementById('f-expiry').value = s.expiry;
-  document.getElementById('f-email').value = s.email || '';
+  document.getElementById('f-email').value  = s.email || '';
   if (s.category === 'apps' && s.store_name) {
     setTimeout(function(){
       var storeEl = document.getElementById('f-store');
@@ -228,7 +147,7 @@ function startEdit(id) {
 
 function cancelEdit() {
   editingId = null;
-  document.getElementById('f-name').value = '';
+  document.getElementById('f-name').value  = '';
   document.getElementById('f-price').value = '';
   document.getElementById('f-expiry').value = '';
   document.getElementById('f-email').value = '';
@@ -276,9 +195,8 @@ function render() {
       </div>
     </div>
 
-
     <!-- NAVEGACIÓN A HERRAMIENTAS -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:24px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:24px">
       <button onclick="openReviewGenerator()"
          style="background:linear-gradient(135deg,#7c3aed,#a21caf);border-radius:16px;padding:20px 24px;text-decoration:none;color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 20px rgba(124,58,237,.25);transition:transform .15s,box-shadow .15s;border:none;cursor:pointer;width:100%;text-align:left"
          onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(124,58,237,.4)'"
@@ -305,12 +223,10 @@ function render() {
           <button onclick="closeReviewGenerator()" style="background:#1e293b;border:1px solid #334155;color:#94a3b8;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
         </div>
         <div style="flex:1;overflow:hidden;padding:0">
-          <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed" title="Review Generator — Dropshipping Pipeline" width="100%" height="100%" frameborder="0" allow="clipboard-write" allowfullscreen style="display:block;width:100%;height:calc(95vh - 65px);border:none"></iframe>
+          <iframe src="https://claude.site/public/artifacts/f1333354-222d-4533-b9c9-74667e57a896/embed" title="Review Generator" width="100%" height="100%" frameborder="0" allow="clipboard-write" allowfullscreen style="display:block;width:100%;height:calc(95vh - 65px);border:none"></iframe>
         </div>
       </div>
     </div>
-
-
 
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
       <div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:16px">
@@ -384,7 +300,6 @@ function render() {
           </button>
           <button id="cancel-btn" onclick="cancelEdit()" style="display:none;background:#1e293b;color:#e2e8f0;border:none;border-radius:8px;padding:11px 14px;cursor:pointer;font-size:13px">✕</button>
         </div>
-
       </div>
     </div>
 
@@ -417,9 +332,7 @@ function render() {
                     + '<div style="width:8px;height:8px;border-radius:50%;background:'+c.border+';flex-shrink:0"></div>'
                     + '<div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.name+'</div></div>'
                     + '<div style="font-size:11px;color:#94a3b8;margin-top:3px">Vence '+formatDate(s.expiry)+'</div>'
-                    + storeHtml
-                    + emailHtml
-                    + '</div>'
+                    + storeHtml + emailHtml + '</div>'
                     + '<div style="display:flex;gap:4px;margin-left:8px;flex-shrink:0">'
                     + '<button onclick="startEdit(\''+s.id+'\')" style="background:transparent;border:none;cursor:pointer;padding:4px;border-radius:6px">✏️</button>'
                     + '<button onclick="deleteSub(\''+s.id+'\')" style="background:transparent;border:none;cursor:pointer;padding:4px;border-radius:6px">🗑️</button></div></div>'
@@ -436,7 +349,7 @@ function render() {
   </div>`;
 }
 
-// ── REVIEW GENERATOR POPUP ───────────────────────────
+// ── REVIEW GENERATOR ─────────────────────────────────
 
 function openReviewGenerator() {
   var modal = document.getElementById('review-modal');
@@ -452,23 +365,22 @@ function closeReviewGenerator() {
   document.body.style.overflow = '';
 }
 
+async function logout() {
+  await db.auth.signOut();
+  location.href = 'subscriptions.html';
+}
+
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeReviewGenerator(); return; }
-  if (!isAuthenticated) {
-    if (/^[0-9]$/.test(e.key)) { pinPress(e.key); return; }
-    if (e.key === 'Backspace')  { pinClear(); return; }
-    if (e.key === 'Enter')      { pinSubmit(); return; }
-  }
+  if (e.key === 'Escape') closeReviewGenerator();
 });
 
-// ── INIT ─────────────────────────────────────────────
-
+// ── ARRANQUE ─────────────────────────────────────────
+// Verificación defensiva: si la sesión desapareció entre el login y aquí, redirigir.
 (async function() {
   var result = await db.auth.getSession();
-  if (result.data && result.data.session) {
-    isAuthenticated = true;
-    loadSubs();
-  } else {
-    renderLogin();
+  if (!result.data || !result.data.session) {
+    location.href = 'subscriptions.html';
+    return;
   }
+  loadSubs();
 })();
