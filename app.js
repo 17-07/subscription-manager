@@ -454,9 +454,7 @@ function closeReviewGenerator() {
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') { closeReviewGenerator(); return; }
-
-  // PIN keyboard support (solo cuando la pantalla de login está activa)
-  if (!sessionStorage.getItem('auth')) {
+  if (!isAuthenticated) {
     if (/^[0-9]$/.test(e.key)) { pinPress(e.key); return; }
     if (e.key === 'Backspace')  { pinClear(); return; }
     if (e.key === 'Enter')      { pinSubmit(); return; }
@@ -465,8 +463,12 @@ document.addEventListener('keydown', function(e) {
 
 // ── INIT ─────────────────────────────────────────────
 
-if (sessionStorage.getItem('auth') === '1') {
-  loadSubs();
-} else {
-  renderLogin();
-}
+(async function() {
+  var result = await db.auth.getSession();
+  if (result.data && result.data.session) {
+    isAuthenticated = true;
+    loadSubs();
+  } else {
+    renderLogin();
+  }
+})();
