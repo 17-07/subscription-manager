@@ -257,6 +257,7 @@ function render() {
         <button onclick="setView('products')" style="padding:6px 14px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;${view==='products'||view==='detail'?'background:rgba(124,58,237,.15);color:#a78bfa':'background:transparent;color:#64748b'}">📦 Productos</button>
       </div>
       <button onclick="editingId=null;selectedProduct=null;setView('form')" style="padding:7px 16px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a21caf);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">+ Añadir</button>
+      <button onclick="logout()" style="padding:7px 14px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;font-size:13px;cursor:pointer;font-family:inherit">🔒</button>
     </div>
     <div style="padding-top:60px" id="main-content"></div>
   </div>`;
