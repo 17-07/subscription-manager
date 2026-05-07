@@ -1,4 +1,6 @@
-const PIN = '2038';
+// AUTH_EMAIL es el identificador de usuario en Supabase. No es un dato sensible.
+// La contraseña la configuras en Supabase → Authentication → Users. Nunca en el código.
+const AUTH_EMAIL = 'samu@samudrop.com';
 const SUPABASE_URL = 'https://iofdeuwxlrefjjzdzbun.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvZmRldXd4bHJlZmpqemR6YnVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNzA3MDgsImV4cCI6MjA5MTk0NjcwOH0.UO6aQu9LbfNkbg0HxwYV4byzsxDZPEdBf4OZFSwXOYc';
 
