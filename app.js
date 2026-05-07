@@ -16,6 +16,7 @@ const CATEGORIES = {
 let subs = [];
 let editingId = null;
 let pinValue = '';
+let isAuthenticated = false;
 
 // ── PIN ──────────────────────────────────────────────
 
