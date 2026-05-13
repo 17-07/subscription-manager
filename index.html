@@ -2302,6 +2302,10 @@ async function go(){
         igchatFrameLoaded = true;
         document.getElementById('igchat-frame').srcdoc = IGCHAT_HTML;
       }
+      if (id === 'whois-modal' && !whoisFrameLoaded) {
+        whoisFrameLoaded = true;
+        document.getElementById('whois-frame').srcdoc = WHOIS_HTML;
+      }
     }
 
     function closeModal(id) {
