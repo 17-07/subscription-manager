@@ -2123,153 +2123,6 @@ function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');v
 </body>
 </html>`;
 
-    /* WHOIS tool loads via whois.html — no srcdoc needed */
-    var _DEL_START = `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WHOIS RDAP</title>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{background:#0f172a;color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;min-height:100vh;padding:32px 24px;-webkit-font-smoothing:antialiased}
-    .wrap{max-width:560px;margin:0 auto}
-    .hdr{text-align:center;margin-bottom:32px}
-    .hdr-title{font-size:20px;font-weight:800;letter-spacing:-.03em;color:#f1f5f9;margin-bottom:6px}
-    .hdr-sub{font-size:13px;color:#64748b;line-height:1.5}
-    .row{display:flex;gap:10px;margin-bottom:28px}
-    .inp{flex:1;background:#1e293b;border:1px solid #334155;border-radius:12px;padding:12px 16px;font-size:14px;color:#f1f5f9;font-family:inherit;outline:none;transition:border-color .2s}
-    .inp::placeholder{color:#475569}
-    .inp:focus{border-color:#06b6d4}
-    .btn{background:linear-gradient(135deg,#06b6d4,#0891b2);border:none;border-radius:12px;padding:12px 22px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:inherit;transition:opacity .2s;white-space:nowrap}
-    .btn:hover{opacity:.85}
-    .btn:disabled{opacity:.45;cursor:not-allowed}
-    .loader{display:none;flex-direction:column;align-items:center;gap:14px;padding:48px 0}
-    .loader.on{display:flex}
-    .spin{width:36px;height:36px;border:3px solid #1e293b;border-top-color:#06b6d4;border-radius:50%;animation:spin .7s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .load-txt{font-size:13px;color:#64748b}
-    .results{display:none}
-    .results.on{display:block}
-    .domain-badge{text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#334155;margin-bottom:16px}
-    .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
-    .ic{background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px 10px;text-align:center}
-    .ic-ico{font-size:1.4rem;display:block;margin-bottom:8px}
-    .ic-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#475569;margin-bottom:5px}
-    .ic-val{font-size:12px;font-weight:700;color:#f1f5f9;line-height:1.4;word-break:break-word}
-    .ic-val.ok{color:#34d399}
-    .ic-val.warn{color:#fbbf24}
-    .ic-val.bad{color:#f87171}
-    .ic.exp-ok{border-color:rgba(52,211,153,.25)}
-    .ic.exp-warn{border-color:rgba(251,191,36,.25)}
-    .ic.exp-bad{border-color:rgba(248,113,113,.25)}
-    .meta-row{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:12px 16px;display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
-    .meta-ico{font-size:1.1rem;flex-shrink:0;margin-top:1px}
-    .meta-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#475569;margin-bottom:3px}
-    .meta-val{font-size:13px;font-weight:600;color:#e2e8f0;line-height:1.4}
-    .source{text-align:center;font-size:11px;color:#334155;margin-top:8px}
-    .err-box{display:none;background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.18);border-radius:14px;padding:24px;text-align:center}
-    .err-box.on{display:block}
-    .err-ico{font-size:2rem;margin-bottom:10px}
-    .err-title{font-size:15px;font-weight:700;color:#f87171;margin-bottom:6px}
-    .err-msg{font-size:13px;color:#94a3b8;line-height:1.6}
-  </style>
-</head>
-<body>
-<div class="wrap">
-  <div class="hdr">
-    <div class="hdr-title">🔍 Consulta WHOIS / RDAP</div>
-    <div class="hdr-sub">Registro, expiración y estado de cualquier dominio</div>
-  </div>
-  <div class="row">
-    <input class="inp" id="d" type="text" placeholder="ej: assassinslamps.com" autocomplete="off" spellcheck="false"/>
-    <button class="btn" id="btn" onclick="go()">Consultar</button>
-  </div>
-  <div class="loader" id="loader"><div class="spin"></div><div class="load-txt">Consultando RDAP...</div></div>
-  <div class="results" id="results">
-    <div class="domain-badge" id="rdom"></div>
-    <div class="cards">
-      <div class="ic"><span class="ic-ico">📅</span><div class="ic-lbl">Registro</div><div class="ic-val" id="vReg">—</div></div>
-      <div class="ic" id="expCard"><span class="ic-ico">⏳</span><div class="ic-lbl">Expiración</div><div class="ic-val" id="vExp">—</div></div>
-      <div class="ic"><span class="ic-ico">🔄</span><div class="ic-lbl">Actualizado</div><div class="ic-val" id="vUpd">—</div></div>
-    </div>
-    <div class="meta-row" id="regRow" style="display:none"><span class="meta-ico">🏢</span><div><div class="meta-lbl">Registrador</div><div class="meta-val" id="vReg2"></div></div></div>
-    <div class="meta-row" id="stRow" style="display:none"><span class="meta-ico">🔒</span><div><div class="meta-lbl">Estado</div><div class="meta-val" id="vSt"></div></div></div>
-    <div class="source" id="src"></div>
-  </div>
-  <div class="err-box" id="errBox"><div class="err-ico" id="eIco">⚠️</div><div class="err-title" id="eTitle">Error</div><div class="err-msg" id="eMsg"></div></div>
-</div>
-<script>
-document.getElementById('d').addEventListener('keydown',function(e){if(e.key==='Enter')go();});
-function fmt(s){if(!s)return null;try{var d=new Date(s);return isNaN(d)?null:d.toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return null;}}
-function days(s){if(!s)return null;try{var d=new Date(s);return isNaN(d)?null:Math.floor((d-Date.now())/86400000);}catch(e){return null;}}
-function hide(id){document.getElementById(id).classList.remove('on');}
-function show(id){document.getElementById(id).classList.add('on');}
-function setLoad(v){document.getElementById('loader').classList.toggle('on',v);document.getElementById('btn').disabled=v;}
-function err(ico,title,msg){setLoad(false);hide('results');document.getElementById('eIco').textContent=ico;document.getElementById('eTitle').textContent=title;document.getElementById('eMsg').textContent=msg;show('errBox');}
-function render(data,source){
-  hide('errBox');setLoad(false);
-  var dates={};
-  (data.events||[]).forEach(function(ev){
-    if(ev.eventAction==='registration')dates.reg=ev.eventDate;
-    if(ev.eventAction==='expiration')dates.exp=ev.eventDate;
-    if(ev.eventAction==='last changed')dates.upd=ev.eventDate;
-  });
-  document.getElementById('rdom').textContent=data.ldhName||'';
-  document.getElementById('vReg').textContent=fmt(dates.reg)||'No disponible';
-  document.getElementById('vUpd').textContent=fmt(dates.upd)||'No disponible';
-  var expEl=document.getElementById('vExp');var expCard=document.getElementById('expCard');
-  expCard.className='ic';
-  if(dates.exp){
-    var d=days(dates.exp);expEl.textContent=fmt(dates.exp);
-    if(d!==null){if(d<0){expEl.className='ic-val bad';expCard.classList.add('exp-bad');}else if(d<30){expEl.className='ic-val warn';expCard.classList.add('exp-warn');}else{expEl.className='ic-val ok';expCard.classList.add('exp-ok');}}
-  }else{expEl.textContent='No disponible';expEl.className='ic-val';}
-  var regName=null;
-  (data.entities||[]).forEach(function(e){
-    if(e.roles&&e.roles.indexOf('registrar')!==-1&&e.vcardArray&&e.vcardArray[1]){
-      e.vcardArray[1].forEach(function(v){if(v[0]==='fn')regName=v[3];});
-    }
-  });
-  if(regName){document.getElementById('vReg2').textContent=regName;document.getElementById('regRow').style.display='flex';}
-  else{document.getElementById('regRow').style.display='none';}
-  var st=data.status||[];
-  if(st.length){document.getElementById('vSt').textContent=st.slice(0,4).join(' · ');document.getElementById('stRow').style.display='flex';}
-  else{document.getElementById('stRow').style.display='none';}
-  document.getElementById('src').textContent='Fuente: '+source;
-  show('results');
-}
-async function go(){
-  var raw=document.getElementById('d').value.trim().toLowerCase();
-  if(!raw)return;
-  raw=raw.replace(/^https?:\/\//,'').replace(/\/.*$/,'');
-  if(!raw.includes('.')){err('❌','Dominio inválido','Introduce un dominio válido, por ejemplo: ejemplo.com');return;}
-  hide('results');hide('errBox');setLoad(true);
-  var tld=raw.split('.').pop();
-  var data=null,source='';
-  if(tld==='com'||tld==='net'){
-    try{
-      var r=await fetch('https://rdap.verisign.com/'+tld+'/v1/domain/'+encodeURIComponent(raw));
-      if(r.ok){data=await r.json();source='RDAP Verisign';}
-    }catch(e){}
-  }
-  if(!data){
-    try{
-      var r2=await fetch('https://rdap.org/domain/'+encodeURIComponent(raw));
-      if(r2.ok){data=await r2.json();source='RDAP rdap.org';}
-      else if(r2.status===404){err('🔍','No encontrado','El dominio "'+raw+'" no está registrado o no existe en la base de datos RDAP.');return;}
-      else{err('⚠️','Error al consultar','El servicio RDAP devolvió un error ('+r2.status+'). Inténtalo de nuevo.');return;}
-    }catch(e){
-      if(!navigator.onLine){err('📡','Sin conexión','Comprueba tu conexión a internet e inténtalo de nuevo.');}
-      else{err('⚠️','Error de conexión','No se pudo conectar con el servicio RDAP. El TLD puede no estar soportado.');}
-      return;
-    }
-  }
-  if(data){render(data,source);}else{err('🌐','Sin datos','No se pudo obtener información para este dominio.');}
-}
-<\/script>
-</body>
-</html>`;
-
     function copyEmail() {
       var text = document.getElementById('email-text').innerText;
       navigator.clipboard.writeText(text).then(function() {
@@ -2283,7 +2136,6 @@ async function go(){
     var downloaderFrameLoaded = false;
     var metaFrameLoaded = false;
     var igchatFrameLoaded = false;
-    var whoisFrameLoaded = false;
     function openModal(id) {
       document.getElementById(id).classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -2302,10 +2154,6 @@ async function go(){
       if (id === 'igchat-modal' && !igchatFrameLoaded) {
         igchatFrameLoaded = true;
         document.getElementById('igchat-frame').srcdoc = IGCHAT_HTML;
-      }
-      if (id === 'whois-modal' && !whoisFrameLoaded) {
-        whoisFrameLoaded = true;
-        document.getElementById('whois-frame').srcdoc = WHOIS_HTML;
       }
     }
 
