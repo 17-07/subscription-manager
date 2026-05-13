@@ -2123,8 +2123,8 @@ function onDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');v
 </body>
 </html>`;
 
-    /* WHOIS tool is loaded via whois.html (separate file — src iframe) */
-    var _WHOIS_PLACEHOLDER = `<!DOCTYPE html>
+    /* WHOIS tool loads via whois.html — no srcdoc needed */
+    var _DEL_START = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
